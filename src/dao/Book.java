@@ -16,7 +16,7 @@ public class Book {
 	public static final LocalDate DEFAULT_EDITION_DATE = LocalDate.of(0, 1, 1);
 	public static final double DEFAULT_PRICE = 0.;
 	
-	private static final String TITLE_PREFIX = "title";
+	//private static final String TITLE_PREFIX = "title";
 	
 	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy", new Locale("us"));
 	
@@ -63,7 +63,10 @@ public class Book {
 	private static final long OLDEST_BOOK_AGE = 100;
 	private static final double MIN_BOOK_PRICE = 100.;
 	private static final double MAX_BOOK_PRICE = 1000.;
-	private static final int NUM_BOOK_TITLES = 10;
+	//private static final int NUM_BOOK_TITLES = 10;
+	private static final String[] TITLES
+		= {"Day and Night","Summer and Winter","Bread and Stone","Eagle and Snake","Head and Ass",
+		   "Love and Hate","Red and Black","Girls and Vodka","Church and Yoghurt","Drugs and Sex"};
 	
 	public static Book getRandomBook(){
 		
@@ -76,7 +79,7 @@ public class Book {
 		return new Book(
 				bookISBN,
 				Author.getRandomAuthors(),
-				TITLE_PREFIX+"#"+RandomLibrary.gen.nextInt(NUM_BOOK_TITLES),
+				TITLES[RandomLibrary.gen.nextInt(TITLES.length)],
 				Publisher.getRandomPublisher(),
 				RandomLibrary.getRandomDate(oldest, now),
 				RandomLibrary.nextDoubleRange(MIN_BOOK_PRICE, MAX_BOOK_PRICE)
@@ -85,7 +88,60 @@ public class Book {
 
 	@Override
 	public String toString() {
-		return "Book:<"+ ISBN + "; "+ authors + "; " + title + "; " + publisher
-				+ "; " + edition.format(dtf) + "; " + String.format("%.2f", price)+">";
+		return "Book: "+ ISBN + "; author(s): "+ authors + "; '" + title + "'; publisher: " + publisher
+				+ "; " + edition.format(dtf) + "; " + String.format("%.2f", price);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (ISBN ^ (ISBN >>> 32));
+		result = prime * result + ((authors == null) ? 0 : authors.hashCode());
+		result = prime * result + ((edition == null) ? 0 : edition.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(price);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((publisher == null) ? 0 : publisher.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Book other = (Book) obj;
+		if (ISBN != other.ISBN)
+			return false;
+		if (authors == null) {
+			if (other.authors != null)
+				return false;
+		} else if (!authors.equals(other.authors))
+			return false;
+		if (edition == null) {
+			if (other.edition != null)
+				return false;
+		} else if (!edition.equals(other.edition))
+			return false;
+		if (Double.doubleToLongBits(price) != Double.doubleToLongBits(other.price))
+			return false;
+		if (publisher == null) {
+			if (other.publisher != null)
+				return false;
+		} else if (!publisher.equals(other.publisher))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		return true;
+	}
+	
+	
 }
