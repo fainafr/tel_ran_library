@@ -25,7 +25,7 @@ public interface ILibrary {
 	//contains
 	public boolean contains(Book book);
 	public boolean containsAll(Collection<Book> bCollection);
-	public Iterable<Book> containsAtLastOne(Collection<Book> bCollection);
+	public Iterable<Book> containsAtLeastOne(Collection<Book> bCollection);
 	
 	//remove
 	public boolean remove(Book book);
@@ -53,7 +53,7 @@ public interface ILibrary {
 	public Book getBookByISBN(long isbn);
 	public Iterable<Book> getBooksByAuthor(Author author);
 	public Iterable<Book> getBooksByAllAuthors(Collection<Author> aCollection);
-	public Iterable<Book> getBooksByAtLastOneAuthor(Collection<Author> aCollection);
+	public Iterable<Book> getBooksByAtLeastOneAuthor(Collection<Author> aCollection);
 	public Iterable<Book> getBooksByTitle(String title);
 	public Iterable<Book> getBooksByPublisher(Publisher publicher);
 	public Iterable<Book> getBooksByPublisherName(String pName);
