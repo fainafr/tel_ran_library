@@ -9,46 +9,36 @@ import dao.Publisher;
 
 public enum SortBy {
 	AUTHOR {
-		public Author key(Book book) {
-			//multi key is tough
-			return null;
+		public Set<Author> getKey(Book book) {
+			return book.getAuthors();
 		}
 	},
 	TITLE {
-		public String key(Book book) {
+		public String getKey(Book book) {
 			return book.getTitle();
 		}
 	},
 	PUBLISHER {
-		public Publisher key(Book book) {
+		public Publisher getKey(Book book) {
 			return book.getPublisher();
 		}
 	},
 	PUBCOUNTRY {
-		public String key(Book book) {
+		public String getKey(Book book) {
 			return book.getPublisher().getCountry().name();
 		}
 	},
 	EDITION {
-		public LocalDate key(Book book) {
+		public LocalDate getKey(Book book) {
 			return book.getEdition();
 		}
 	},
 	PRICE {
-		public Double key(Book book) {
+		public Double getKey(Book book) {
 			return book.getPrice();
 		}
 	},;
 
-	public abstract Object key(Book book);
+	public abstract Object getKey(Book book);
 
 }
-
-// putToMultivalueMap(authorTM, a, book);}
-// putToMultivalueMap(titleTM, book.getTitle(), book);
-// putToMultivalueMap(publisherHM, book.getPublisher(), book);
-// putToMultivalueMap(publisherNameTM, book.getPublisher().getName(), book);
-// putToMultivalueMap(publisherCountryTM,
-// book.getPublisher().getCountry().name(), book);
-// putToMultivalueMap(editionTM, book.getEdition(), book);
-// putToMultivalueMap(priceTM, book.getPrice(), book);

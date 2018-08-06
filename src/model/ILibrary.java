@@ -38,7 +38,6 @@ public interface ILibrary {
 	public Iterable<Book> getAllBooksFilteredWithPredicate(Predicate<Book> predicate);
 	
 	// correct
-	
 	public boolean correctBookISBN(long isbn, long newISBN);
 	public boolean correctBookAuthors(long isbn, Set<Author> newAuthors);
 	public boolean correctBookTitle(long isbn, String newTitle);

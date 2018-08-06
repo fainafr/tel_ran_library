@@ -26,14 +26,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>>{
 	private static final TreeSet<Book> EMPTY_TREE_SET = new TreeSet<Book>();
 	
 	private HashMap<Long, Book> isbnHM;
-	private TreeMap<Author, TreeSet<Book>> authorTM;
-	private TreeMap<String, TreeSet<Book>> titleTM;
-	private HashMap<Publisher, TreeSet<Book>> publisherHM;
-	private TreeMap<String, TreeSet<Book>> publisherNameTM;
-	private TreeMap<String, TreeSet<Book>> publisherCountryTM;
-	private TreeMap<LocalDate, TreeSet<Book>> editionTM;
-	private TreeMap<Double, TreeSet<Book>> priceTM;
-	
+
 	public Library(){
 		emptyLibrary();
 	}
@@ -45,13 +38,6 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>>{
 
 	private void emptyLibrary() {
 		isbnHM = new HashMap<Long, Book>();
-		authorTM = new TreeMap<Author, TreeSet<Book>>();
-		titleTM = new TreeMap<String, TreeSet<Book>>();
-		publisherHM = new HashMap<Publisher, TreeSet<Book>>();
-		publisherNameTM = new TreeMap<String, TreeSet<Book>>();
-		publisherCountryTM = new TreeMap<String, TreeSet<Book>>();
-		editionTM = new TreeMap<LocalDate, TreeSet<Book>>();
-		priceTM = new TreeMap<Double, TreeSet<Book>>();
 	}
 
 	/**
@@ -60,7 +46,6 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>>{
 	 */
 	private class Sorter{
 
-		// how do I put to multivalue by author?
 		private SortBy sortBy;
 		private TreeMap<Object, TreeSet<Book>> sortingMap;
 		
@@ -70,7 +55,12 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>>{
 		}
 		
 		private void putToIterableMap(Book book){
-			putToMultivalueMap(sortingMap, sortBy.key(book), book);
+			Object key = sortBy.getKey(book);
+			if(key instanceof Set<?>) {
+				((Set<Object>) key).stream().forEach(sk -> putToMultivalueMap(sortingMap, sk, book));
+			} else {
+				putToMultivalueMap(sortingMap, key, book);
+			}		
 		}
 	
 		public Iterable<Book> getIterable(){
@@ -90,19 +80,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>>{
 	@Override
 	public boolean addBook(Book book) {
 		if (book == null) return false;
-		
 		if (isbnHM.putIfAbsent(book.getISBN(), book) != null) return false;
-		
-		for(Author a : book.getAuthors()) {
-			putToMultivalueMap(authorTM, a, book);
-		}		
-		putToMultivalueMap(titleTM, book.getTitle(), book);
-		putToMultivalueMap(publisherHM, book.getPublisher(), book);
-		putToMultivalueMap(publisherNameTM, book.getPublisher().getName(), book);
-		putToMultivalueMap(publisherCountryTM, book.getPublisher().getCountry().name(), book);
-		putToMultivalueMap(editionTM, book.getEdition(), book);
-		putToMultivalueMap(priceTM, book.getPrice(), book);
-     	
 		return true;
 	}
 	
@@ -288,7 +266,10 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>>{
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByAuthors() {
-		return null;
+		Sorter sorter = new Sorter(SortBy.AUTHOR);
+		StreamSupport.stream(this.spliterator(), false)
+		    .forEach(e -> sorter.putToIterableMap(e.getValue()));
+		return sorter.getIterable();
 	}
 
 	@Override
