@@ -9,7 +9,7 @@ import dao.Publisher;
 /**
  * Class that provides enums for Library sorting operations
  */
-public enum BookSortWays {
+public enum BookSortWay {
 	AUTHOR {
 		public BookKey <Author> getKey(Book book) {
 			return BookKey.AuthorBookKey(book.getAuthors().iterator().next());

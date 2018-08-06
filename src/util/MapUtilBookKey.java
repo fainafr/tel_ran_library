@@ -15,9 +15,9 @@ public class MapUtilBookKey extends MapUtilTemplateAbstract<BookKey<?>, TreeSet<
 
 	private static final Comparator<Book> generalComparator = BookGeneralComparator.getInstance();
 
-	private BookSortWays sortBy;
+	private BookSortWay sortBy;
 
-	public MapUtilBookKey(BookSortWays sortBy) {
+	public MapUtilBookKey(BookSortWay sortBy) {
 		this.sortBy = sortBy;
 	}
 

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -13,19 +12,15 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
-import comparators.BookGeneralComparator;
 import dao.Author;
 import dao.Book;
 import dao.Countries;
 import dao.Publisher;
 import util.BookKey;
 import util.MapUtilBookKey;
-import util.BookSortWays;
+import util.BookSortWay;
 
 public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
-
-	private static final Comparator<Book> generalComparator = BookGeneralComparator.getInstance();
-	private static final TreeSet<Book> EMPTY_TREE_SET = new TreeSet<Book>();
 
 	private HashMap<Long, Book> isbnHM;
 
@@ -44,22 +39,21 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	/**
 	 * Class that handles treemap for sorting;
-	 * 
 	 */
-	//plans: store sorting maps!
-	//plans: convert mapUtil to static
+	
 	private class Sorter {
-		
-		private BookSortWays sortBy;
-		private TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
+		//AF: sortBy, sortingMap -> Iterable of Books sorted in a specified way;
+		//RI: sortBy, sortingMap immutable by reference 
+		private final BookSortWay sortBy;
+		private final TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
 
-		private Sorter(final BookSortWays sortBy) {
+		private Sorter(final BookSortWay sortBy) {
 			this.sortBy = sortBy;
 			sortingMap = new TreeMap<BookKey<?>, TreeSet<Book>>();
 		}
 
 		private void putToIterableMap(Book book) {
-			MapUtilBookKey mapUtil = new MapUtilBookKey(this.sortBy);
+			final MapUtilBookKey mapUtil = new MapUtilBookKey(this.sortBy);
 			mapUtil.putToIterableMap(sortingMap, book);
 		}
 
@@ -75,15 +69,6 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		if (isbnHM.putIfAbsent(book.getISBN(), book) != null)
 			return false;
 		return true;
-	}
-
-	private static <K> void putToMultivalueMap(Map<K, TreeSet<Book>> map, K key, Book book) {
-		TreeSet<Book> tsb = map.get(key);
-		if (tsb == null) {
-			tsb = new TreeSet<>(generalComparator);
-			map.put(key, tsb);
-		}
-		tsb.add(book);
 	}
 
 	@Override
@@ -267,32 +252,32 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	// sorts by 1st author;
 	@Override
 	public Iterable<Book> getAllBooksSortedByAuthors(){
-		return toIterable(new Sorter(BookSortWays.AUTHOR));
+		return toIterable(new Sorter(BookSortWay.AUTHOR));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByTitle() {
-		return toIterable(new Sorter(BookSortWays.TITLE));
+		return toIterable(new Sorter(BookSortWay.TITLE));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPublisherNames() {
-		return toIterable(new Sorter(BookSortWays.PUBLISHER));
+		return toIterable(new Sorter(BookSortWay.PUBLISHER));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPublisherCountries() {
-		return toIterable(new Sorter(BookSortWays.PUBCOUNTRY));
+		return toIterable(new Sorter(BookSortWay.PUBCOUNTRY));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByEditionDate() {
-		return toIterable(new Sorter(BookSortWays.EDITIONDATE));
+		return toIterable(new Sorter(BookSortWay.EDITIONDATE));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPrice() {
-		return toIterable(new Sorter(BookSortWays.PRICE));
+		return toIterable(new Sorter(BookSortWay.PRICE));
 	}
 
 	@Override
