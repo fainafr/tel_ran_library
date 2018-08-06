@@ -50,15 +50,16 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	//plans: convert mapUtil to static
 	private class Sorter {
 		
-		private MapUtilBookKey mapUtil;
+		private BookSortWays sortBy;
 		private TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
 
 		private Sorter(final BookSortWays sortBy) {
-			mapUtil = new MapUtilBookKey(sortBy);
+			this.sortBy = sortBy;
 			sortingMap = new TreeMap<BookKey<?>, TreeSet<Book>>();
 		}
 
 		private void putToIterableMap(Book book) {
+			MapUtilBookKey mapUtil = new MapUtilBookKey(this.sortBy);
 			mapUtil.putToIterableMap(sortingMap, book);
 		}
 
