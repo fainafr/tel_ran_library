@@ -1,44 +1,48 @@
 package model;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 import dao.Author;
 import dao.Book;
+import dao.BookKey;
 import dao.Publisher;
 
+/**
+ * Class that provides enums for Library sorting operations
+ */
 public enum SortBy {
 	AUTHOR {
-		public Set<Author> getKey(Book book) {
-			return book.getAuthors();
+		public BookKey <Author> getKey(Book book) {
+			return BookKey.AuthorBookKey(book.getAuthors().iterator().next());
 		}
 	},
 	TITLE {
-		public String getKey(Book book) {
-			return book.getTitle();
+		public BookKey<String> getKey(Book book) {
+			return BookKey.StringBookKey(book.getTitle());
 		}
 	},
 	PUBLISHER {
-		public Publisher getKey(Book book) {
-			return book.getPublisher();
+		public BookKey<Publisher> getKey(Book book) {
+			return  BookKey.PublisherBookKey(book.getPublisher());
 		}
 	},
 	PUBCOUNTRY {
-		public String getKey(Book book) {
-			return book.getPublisher().getCountry().name();
+		public BookKey<String> getKey(Book book) {
+			return BookKey.StringBookKey(book.getPublisher().getCountry().name());
 		}
 	},
 	EDITION {
-		public LocalDate getKey(Book book) {
-			return book.getEdition();
+		public BookKey<LocalDate> getKey(Book book) {
+			return BookKey.LocalDateBookKey(book.getEdition());
 		}
 	},
 	PRICE {
-		public Double getKey(Book book) {
-			return book.getPrice();
+		public BookKey<Double> getKey(Book book) {
+			return BookKey.DoubleBookKey(book.getPrice());
 		}
-	},;
+	};
 
-	public abstract Object getKey(Book book);
+	public abstract BookKey<?> getKey (Book book);
+
 
 }
