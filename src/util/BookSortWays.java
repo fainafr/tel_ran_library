@@ -1,16 +1,15 @@
-package model;
+package util;
 
 import java.time.LocalDate;
 
 import dao.Author;
 import dao.Book;
-import dao.BookKey;
 import dao.Publisher;
 
 /**
  * Class that provides enums for Library sorting operations
  */
-public enum SortBy {
+public enum BookSortWays {
 	AUTHOR {
 		public BookKey <Author> getKey(Book book) {
 			return BookKey.AuthorBookKey(book.getAuthors().iterator().next());
@@ -31,7 +30,7 @@ public enum SortBy {
 			return BookKey.StringBookKey(book.getPublisher().getCountry().name());
 		}
 	},
-	EDITION {
+	EDITIONDATE {
 		public BookKey<LocalDate> getKey(Book book) {
 			return BookKey.LocalDateBookKey(book.getEdition());
 		}

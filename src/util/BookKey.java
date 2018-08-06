@@ -1,6 +1,9 @@
-package dao;
+package util;
 
 import java.time.LocalDate;
+
+import dao.Author;
+import dao.Publisher;
 
 
 /**
@@ -31,7 +34,6 @@ public class BookKey<T extends Comparable<? super T>> implements Comparable<Book
 	public static BookKey<LocalDate> LocalDateBookKey(LocalDate value){
 		return new BookKey<LocalDate>(value);
 	}
-
 	
 	@Override
 	public int compareTo(BookKey<T> other) {
