@@ -6,18 +6,18 @@ import java.util.TreeSet;
 
 import comparators.BookGeneralComparator;
 import dao.Book;
-import util.MapUtilTemplateAbstract;
+import util.MultiMap;
 
 /**
  * Concrete class for putting things into multimap.
  */
-public class MapUtilBookKey extends MapUtilTemplateAbstract<BookKey<?>, TreeSet<Book>, Book> {
+public class MultiMapFillerBook extends MultiMap<BookKey<?>, TreeSet<Book>, Book> {
 
 	private static final Comparator<Book> generalComparator = BookGeneralComparator.getInstance();
 
 	private BookSortWay sortBy;
 
-	public MapUtilBookKey(BookSortWay sortBy) {
+	public MultiMapFillerBook(BookSortWay sortBy) {
 		this.sortBy = sortBy;
 	}
 

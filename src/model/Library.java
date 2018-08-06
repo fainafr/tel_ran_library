@@ -17,7 +17,8 @@ import dao.Book;
 import dao.Countries;
 import dao.Publisher;
 import util.BookKey;
-import util.MapUtilBookKey;
+import util.MultiMapFillerBook;
+import util.MultiMap;
 import util.BookSortWay;
 
 public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
@@ -42,23 +43,21 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	 */
 	
 	private class Sorter {
-		//AF: sortBy, sortingMap -> Iterable of Books sorted in a specified way;
-		//RI: sortBy, sortingMap immutable by reference 
-		private final BookSortWay sortBy;
+
+		private final MultiMapFillerBook filler; 
 		private final TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
 
-		private Sorter(final BookSortWay sortBy) {
-			this.sortBy = sortBy;
+		private Sorter(final BookSortWay sortWay) {
+			filler = new MultiMapFillerBook(sortWay);
 			sortingMap = new TreeMap<BookKey<?>, TreeSet<Book>>();
 		}
 
 		private void putToIterableMap(Book book) {
-			final MapUtilBookKey mapUtil = new MapUtilBookKey(this.sortBy);
-			mapUtil.putToIterableMap(sortingMap, book);
+			filler.putToIterableMap(sortingMap, book);
 		}
 
 		public Iterable<Book> getIterable() {
-			return MapUtilBookKey.getList(sortingMap);
+			return MultiMap.getList(sortingMap);
 		}
 	}
 

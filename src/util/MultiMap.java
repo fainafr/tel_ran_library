@@ -12,7 +12,7 @@ import java.util.Map.Entry;
  * @param <V> Collection iterable by E 
  * @param <E> element 
  */
-public abstract class MapUtilTemplateAbstract<K, V extends Collection<E> & Iterable<E>, E> {
+public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 	
 	/**
 	 * Adding a new element into the multimap: a map where key corresponds to a collection.
@@ -43,7 +43,7 @@ public abstract class MapUtilTemplateAbstract<K, V extends Collection<E> & Itera
 	 * @param map
 	 *            any map where value is iterable
 	 */
-	public static <K, V extends Iterable<E>, E> ArrayList<E> getList(Map<K, V> map) {
+	public static final <K, V extends Iterable<E>, E> ArrayList<E> getList(Map<K, V> map) {
 		ArrayList<E> lst = new ArrayList<E>();
 		for (Entry<K, V> entry : map.entrySet()) {
 			for (E element : entry.getValue())
