@@ -35,10 +35,4 @@ public class MultiMapFillerBook extends MultiMap<BookKey<?>, TreeSet<Book>, Book
 	public BookKey<?> getKey(Book element) {
 		return sortBy.getKey(element);
 	}
-
-	@Override
-	public String formatStart(BookKey<?> key) {
-		return key.toString();
-	}
-
 }

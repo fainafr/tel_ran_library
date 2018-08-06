@@ -51,21 +51,4 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 		}
 		return lst;
 	}
-	
-	/**
-	 * Displays map with iterable payload
-	 * 
-	 * @param map
-	 *            any map where value is iterable
-	 */
-	public void displayMapIterableVal(Map<K, V> map) {
-		for (Entry<K, V> entry : map.entrySet()) {
-			for (Object obj : entry.getValue()) {
-				System.out.println(formatStart(entry.getKey())+" -> " + obj);
-			}
-		}
-	}
-	
-	public abstract String formatStart(K key);
-
 }
