@@ -1,14 +1,18 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
 import comparators.BookGeneralComparator;
 import dao.Author;
@@ -16,7 +20,7 @@ import dao.Book;
 import dao.Countries;
 import dao.Publisher;
 
-public class Library implements ILibrary{
+public class Library implements ILibrary, Iterable<Entry<Long, Book>>{
 	
 	private static final Comparator<Book> generalComparator = BookGeneralComparator.getInstance();
 	private static final TreeSet<Book> EMPTY_TREE_SET = new TreeSet<Book>();
@@ -33,6 +37,11 @@ public class Library implements ILibrary{
 	public Library(){
 		emptyLibrary();
 	}
+	
+	@Override
+	public Iterator<Entry<Long, Book>> iterator() {
+		return isbnHM.entrySet().iterator();
+	} 
 
 	private void emptyLibrary() {
 		isbnHM = new HashMap<Long, Book>();
@@ -45,20 +54,55 @@ public class Library implements ILibrary{
 		priceTM = new TreeMap<Double, TreeSet<Book>>();
 	}
 
+	/**
+	 * Class that handles treemap for sorting;
+	 *
+	 */
+	private class Sorter{
+
+		// how do I put to multivalue by author?
+		private SortBy sortBy;
+		private TreeMap<Object, TreeSet<Book>> sortingMap;
+		
+		private Sorter(final SortBy sortBy){
+			this.sortBy = sortBy;
+			sortingMap = new TreeMap<Object, TreeSet<Book>>();
+		}
+		
+		private void putToIterableMap(Book book){
+			putToMultivalueMap(sortingMap, sortBy.key(book), book);
+		}
+	
+		public Iterable<Book> getIterable(){
+			return getList(sortingMap);
+		}
+		
+		private ArrayList<Book> getList(Map<Object, TreeSet<Book>> map) {
+			ArrayList<Book> lst = new ArrayList<Book>();
+			for (Entry<Object, TreeSet<Book>> entry : map.entrySet()) {
+				for (Book element : entry.getValue())
+					lst.add(element);
+			}
+			return lst;
+		}
+	}
+	
 	@Override
 	public boolean addBook(Book book) {
 		if (book == null) return false;
 		
 		if (isbnHM.putIfAbsent(book.getISBN(), book) != null) return false;
 		
-		for(Author a : book.getAuthors()) {putToMultivalueMap(authorTM, a, book);}		
+		for(Author a : book.getAuthors()) {
+			putToMultivalueMap(authorTM, a, book);
+		}		
 		putToMultivalueMap(titleTM, book.getTitle(), book);
 		putToMultivalueMap(publisherHM, book.getPublisher(), book);
 		putToMultivalueMap(publisherNameTM, book.getPublisher().getName(), book);
 		putToMultivalueMap(publisherCountryTM, book.getPublisher().getCountry().name(), book);
 		putToMultivalueMap(editionTM, book.getEdition(), book);
 		putToMultivalueMap(priceTM, book.getPrice(), book);
-		
+     	
 		return true;
 	}
 	
@@ -244,14 +288,15 @@ public class Library implements ILibrary{
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByAuthors() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByTitle() {
-		// TODO Auto-generated method stub
-		return null;
+		Sorter sorter = new Sorter(SortBy.TITLE);
+		StreamSupport.stream(this.spliterator(), false)
+		    .forEach(e -> sorter.putToIterableMap(e.getValue()));
+		return sorter.getIterable();
 	}
 
 	@Override
