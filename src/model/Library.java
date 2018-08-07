@@ -27,7 +27,8 @@ import util.BookSortWay;
 public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	private HashMap<Long, Book> isbnHM;
-
+	private ArrayList<Sorter> sorted; // storage class
+	
 	public Library() {
 		emptyLibrary();
 	}
@@ -97,14 +98,13 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		return sorter.getIterable();
 	}
 	
-	
-
 	@Override
 	public boolean addBook(Book book) {
 		if (book == null)
 			return false;
 		if (isbnHM.putIfAbsent(book.getISBN(), book) != null)
 			return false;
+		sorted.stream().forEach(s -> s.putToIterableMap(book));
 		return true;
 	}
 
@@ -282,6 +282,8 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	// sorts by 1st author;
+	// replace new Sorter with static sorter factory; 
+	// consider memento pattern or something so sorters wouldn't resort after each entry;
 	@Override
 	public Iterable<Book> getAllBooksSortedByAuthors(){
 		return toIterableSorted(new Sorter(BookSortWay.AUTHOR));
