@@ -11,13 +11,13 @@ import util.MultiMap;
 /**
  * Concrete class for putting things into multimap.
  */
-public class MultiMapFillerBook extends MultiMap<BookKey<?>, TreeSet<Book>, Book> {
+public class MultiMapFillerByBook extends MultiMap<BookKey<?>, TreeSet<Book>, Book> {
 
 	private static final Comparator<Book> generalComparator = BookGeneralComparator.getInstance();
 
 	private BookSortWay sortBy;
 
-	public MultiMapFillerBook(BookSortWay sortBy) {
+	public MultiMapFillerByBook(BookSortWay sortBy) {
 		this.sortBy = sortBy;
 	}
 

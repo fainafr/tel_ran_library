@@ -1,15 +1,18 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import dao.Author;
@@ -17,7 +20,7 @@ import dao.Book;
 import dao.Countries;
 import dao.Publisher;
 import util.BookKey;
-import util.MultiMapFillerBook;
+import util.MultiMapFillerByBook;
 import util.MultiMap;
 import util.BookSortWay;
 
@@ -44,11 +47,11 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	
 	private class Sorter {
 
-		private final MultiMapFillerBook filler; 
+		private final MultiMapFillerByBook filler; 
 		private final TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
 
 		private Sorter(final BookSortWay sortWay) {
-			filler = new MultiMapFillerBook(sortWay);
+			filler = new MultiMapFillerByBook(sortWay);
 			sortingMap = new TreeMap<BookKey<?>, TreeSet<Book>>();
 		}
 
@@ -60,6 +63,41 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 			return MultiMap.getList(sortingMap);
 		}
 	}
+	
+	/**
+	 * @return stream of Entries: ISBN and Book, unsorted
+	 */
+	private Stream<Map.Entry<Long, Book>> toIsbnMapStream(){
+		return StreamSupport.stream(this.spliterator(), false);
+	}
+	
+	
+	/**
+	 * @return stream of Books, unsorted
+	 */
+	private Stream<Book> toBookStream(){
+		return StreamSupport.stream(this.spliterator(), false).map(e -> e.getValue());
+	}
+	
+	/**
+	 * @return Iterable of Books, unsorted
+	 */
+	private Iterable<Book> toIterable() {
+		ArrayList<Book> alb = new ArrayList<Book>();
+		this.toBookStream().forEach(alb::add);
+		return alb;
+	}
+	
+	/**
+	 * @param sorter instance of Sorter class
+	 * @return Iterable of Books, sorted
+	 */
+	private Iterable<Book> toIterableSorted(Sorter sorter) {
+		this.toBookStream().forEach(sorter::putToIterableMap);
+		return sorter.getIterable();
+	}
+	
+	
 
 	@Override
 	public boolean addBook(Book book) {
@@ -242,41 +280,36 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	private Iterable<Book> toIterable(Sorter sorter) {
-		StreamSupport.stream(this.spliterator(), false).forEach(e -> sorter.putToIterableMap(e.getValue()));
-		return sorter.getIterable();
-	}
 
 	// sorts by 1st author;
 	@Override
 	public Iterable<Book> getAllBooksSortedByAuthors(){
-		return toIterable(new Sorter(BookSortWay.AUTHOR));
+		return toIterableSorted(new Sorter(BookSortWay.AUTHOR));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByTitle() {
-		return toIterable(new Sorter(BookSortWay.TITLE));
+		return toIterableSorted(new Sorter(BookSortWay.TITLE));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPublisherNames() {
-		return toIterable(new Sorter(BookSortWay.PUBLISHER));
+		return toIterableSorted(new Sorter(BookSortWay.PUBLISHER));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPublisherCountries() {
-		return toIterable(new Sorter(BookSortWay.PUBCOUNTRY));
+		return toIterableSorted(new Sorter(BookSortWay.PUBCOUNTRY));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByEditionDate() {
-		return toIterable(new Sorter(BookSortWay.EDITIONDATE));
+		return toIterableSorted(new Sorter(BookSortWay.EDITIONDATE));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPrice() {
-		return toIterable(new Sorter(BookSortWay.PRICE));
+		return toIterableSorted(new Sorter(BookSortWay.PRICE));
 	}
 
 	@Override
