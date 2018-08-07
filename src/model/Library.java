@@ -1,5 +1,7 @@
 package model;
 
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +15,6 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import dao.Author;
 import dao.Book;
@@ -25,9 +26,11 @@ import util.MultiMap;
 import util.BookSortWay;
 
 public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
-
+	
+	//AF: map (books) + map (sorters) -> library with sorting views;
+	//RI: size of map (books) == size of each map in sorters; 
 	private HashMap<Long, Book> isbnHM;
-	private ArrayList<Sorter> sorted; // storage class
+	private HashMap<BookSortWay, Sorter> sortedHM; // storage class
 	
 	public Library() {
 		emptyLibrary();
@@ -40,6 +43,16 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	private void emptyLibrary() {
 		isbnHM = new HashMap<Long, Book>();
+		sortedHM = new HashMap<BookSortWay, Sorter>();
+	}
+	
+	private void checkRep() {
+		streamValues(sortedHM)
+		.forEach(s -> assertTrue(s.getSize() == isbnHM.size()));
+	}
+	
+	public void selfTest() {
+		checkRep();
 	}
 
 	/**
@@ -48,44 +61,66 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	
 	private class Sorter {
 
+		private final BookSortWay sortWay;
 		private final MultiMapFillerByBook filler; 
 		private final TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
-
+		
+		public BookSortWay getSortWay() {
+			return sortWay;
+		}
+		
 		private Sorter(final BookSortWay sortWay) {
+			this.sortWay = sortWay;
 			filler = new MultiMapFillerByBook(sortWay);
 			sortingMap = new TreeMap<BookKey<?>, TreeSet<Book>>();
 		}
 
-		private void putToIterableMap(Book book) {
-			filler.putToIterableMap(sortingMap, book);
+		private boolean putToIterableMap(Book book) {
+			return filler.putToIterableMap(sortingMap, book);
+		}
+		
+		private boolean removeFromIterableMap(Book book) {
+			return filler.removeFromIterableMap(sortingMap, book);
 		}
 
 		public Iterable<Book> getIterable() {
 			return MultiMap.getList(sortingMap);
 		}
+		
+		public long getSize() {
+			return MultiMap.getMultiMapSize(sortingMap);
+		}
+	}
+	
+	private Sorter getSorter(final BookSortWay sortWay) {
+		Sorter sorter = sortedHM.get(sortWay);
+		if (sorter == null) {
+			sorter = new Sorter(sortWay);
+			sortedHM.put(sortWay, sorter);
+		}
+		return sorter;
 	}
 	
 	/**
-	 * @return stream of Entries: ISBN and Book, unsorted
+	 * @return stream of map Entries: ISBN and Book, unsorted
 	 */
-	private Stream<Map.Entry<Long, Book>> toIsbnMapStream(){
-		return StreamSupport.stream(this.spliterator(), false);
-	}
-	
-	
-	/**
-	 * @return stream of Books, unsorted
-	 */
-	private Stream<Book> toBookStream(){
-		return StreamSupport.stream(this.spliterator(), false).map(e -> e.getValue());
+	private  <K, V> Stream<Map.Entry<K, V>> streamEntries(Map<K, V> map){
+		return map.entrySet().stream();
 	}
 	
 	/**
-	 * @return Iterable of Books, unsorted
+	 * @return stream of map values, unsorted
 	 */
-	private Iterable<Book> toIterable() {
-		ArrayList<Book> alb = new ArrayList<Book>();
-		this.toBookStream().forEach(alb::add);
+	private <K, V> Stream<V> streamValues(Map<K, V> map){
+		return map.entrySet().stream().map(e -> e.getValue());
+	}
+	
+	/**
+	 * @return Iterable of map values, unsorted
+	 */
+	private  <K, V> Iterable<V> toIterable(Map<K, V> map) {
+		ArrayList<V> alb = new ArrayList<V>();
+	    streamValues(map).forEach(alb::add);
 		return alb;
 	}
 	
@@ -94,7 +129,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	 * @return Iterable of Books, sorted
 	 */
 	private Iterable<Book> toIterableSorted(Sorter sorter) {
-		this.toBookStream().forEach(sorter::putToIterableMap);
+		streamValues(isbnHM).forEach(sorter::putToIterableMap);
 		return sorter.getIterable();
 	}
 	
@@ -104,7 +139,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 			return false;
 		if (isbnHM.putIfAbsent(book.getISBN(), book) != null)
 			return false;
-		sorted.stream().forEach(s -> s.putToIterableMap(book));
+		streamValues(sortedHM).forEach(s -> s.putToIterableMap(book));
 		return true;
 	}
 
@@ -155,8 +190,13 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public boolean remove(Book book) {
-		// TODO Auto-generated method stub
-		return false;
+		if (book == null)
+			return false;
+		if (!isbnHM.containsKey(book.getISBN()))
+			return false;
+		isbnHM.remove(book.getISBN());
+		streamValues(sortedHM).forEach(s -> s.removeFromIterableMap(book));
+		return true;
 	}
 
 	@Override
@@ -227,10 +267,10 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		return false;
 	}
 
+	// all this depends on isbn stream;
 	@Override
-	/**/public Book getBookByISBN(long isbn) {
-		// TODO Auto-generated method stub
-		return null;
+	public Book getBookByISBN(long isbn) {
+		return isbnHM.get(isbn);
 	}
 
 	@Override
@@ -276,9 +316,8 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	@Override
-	/**/public Iterable<Book> getAllBooks() {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<Book> getAllBooks() {
+		return toIterable(isbnHM);
 	}
 
 	// sorts by 1st author;
@@ -286,32 +325,32 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	// consider memento pattern or something so sorters wouldn't resort after each entry;
 	@Override
 	public Iterable<Book> getAllBooksSortedByAuthors(){
-		return toIterableSorted(new Sorter(BookSortWay.AUTHOR));
+		return toIterableSorted(getSorter(BookSortWay.AUTHOR));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByTitle() {
-		return toIterableSorted(new Sorter(BookSortWay.TITLE));
+		return toIterableSorted(getSorter(BookSortWay.TITLE));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPublisherNames() {
-		return toIterableSorted(new Sorter(BookSortWay.PUBLISHER));
+		return toIterableSorted(getSorter(BookSortWay.PUBLISHER));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPublisherCountries() {
-		return toIterableSorted(new Sorter(BookSortWay.PUBCOUNTRY));
+		return toIterableSorted(getSorter(BookSortWay.PUBCOUNTRY));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByEditionDate() {
-		return toIterableSorted(new Sorter(BookSortWay.EDITIONDATE));
+		return toIterableSorted(getSorter(BookSortWay.EDITIONDATE));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPrice() {
-		return toIterableSorted(new Sorter(BookSortWay.PRICE));
+		return toIterableSorted(getSorter(BookSortWay.PRICE));
 	}
 
 	@Override

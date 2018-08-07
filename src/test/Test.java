@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
 import comparators.BookGeneralComparator;
 import dao.Book;
 import model.Library;
@@ -19,40 +21,41 @@ public class Test {
 			model.addBook(b);
 
 		System.out.println("BY TITLE");
-		ArrayList<Book> sortedByTitle = new ArrayList<Book>();
-		sortedByTitle.addAll((Collection<? extends Book>) model.getAllBooksSortedByTitle());
-		for (Book b : sortedByTitle)
-			System.out.println(b);
-
+		for(Book b : model.getAllBooksSortedByTitle()) System.out.println(b);
+	
 		System.out.println("BY AUTHORS");
-		ArrayList<Book> sortedByAuthor = new ArrayList<Book>();
-		sortedByAuthor.addAll((Collection<? extends Book>) model.getAllBooksSortedByAuthors());
-		for (Book b : sortedByAuthor)
-			System.out.println(b);
+		for(Book b : model.getAllBooksSortedByAuthors()) System.out.println(b);
 		
 		System.out.println("BY DATE");
-		ArrayList<Book> sortedByDate = new ArrayList<Book>();
-		sortedByDate.addAll((Collection<? extends Book>) model.getAllBooksSortedByEditionDate());
-		for (Book b : sortedByDate)
-			System.out.println(b);
+		for(Book b : model.getAllBooksSortedByEditionDate()) System.out.println(b);
 		
 		System.out.println("BY PUBLISHER");
-		ArrayList<Book> sortedByPub = new ArrayList<Book>();
-		sortedByPub.addAll((Collection<? extends Book>) model.getAllBooksSortedByPublisherNames());
-		for (Book b : sortedByPub)
-			System.out.println(b);
+		for(Book b : model.getAllBooksSortedByPublisherNames()) System.out.println(b);
 		
-		System.out.println("BY COUNTRY");
-		ArrayList<Book> sortedByCntr = new ArrayList<Book>();
-		sortedByCntr.addAll((Collection<? extends Book>) model.getAllBooksSortedByPublisherCountries());
-		for (Book b : sortedByCntr)
-			System.out.println(b);
+		System.out.println("BY COUNTRY");		
+		for(Book b : model.getAllBooksSortedByPublisherCountries()) System.out.println(b);
 		
-		System.out.println("BY PRICE");
-		ArrayList<Book> sortedByDollar = new ArrayList<Book>();
-		sortedByDollar.addAll((Collection<? extends Book>) model.getAllBooksSortedByPrice());
-		for (Book b : sortedByDollar)
-			System.out.println(b);
+		System.out.println("BY PRICE");		
+		for(Book b : model.getAllBooksSortedByPrice()) System.out.println(b);
+		
+		Book rand = model.getAllBooks().iterator().next();
+		System.out.println("REMOVE I");
+		System.out.println(rand);
+		System.out.println(model.remove(rand));
+		
+		System.out.println("BY AUTHORS");
+		for(Book b : model.getAllBooksSortedByAuthors()) System.out.println(b);
+		
+		Book randii = model.getAllBooks().iterator().next();
+		System.out.println("REMOVE II");
+		System.out.println(randii);
+		System.out.println(model.remove(randii));
+		
+		System.out.println("BY AUTHORS");
+		for(Book b : model.getAllBooksSortedByAuthors()) System.out.println(b);
+	
+		model.selfTest();
+		
 		
 	}
 
