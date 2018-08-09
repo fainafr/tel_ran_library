@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import dao.Author;
@@ -116,7 +117,6 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	private Sorter getSorter(final BookSortWay sortWay) {
 		Sorter sorter = sortedHM.get(sortWay);
 		if (sorter == null) {
-			System.out.println(" NEW SORTER ");
 			sorter = new Sorter(sortWay);
 			sortedHM.put(sortWay, sorter);
 		}
@@ -229,8 +229,11 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public Iterable<Book> removeAll(Collection<Book> bCollection) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Book> removedBooks = new ArrayList<Book>();
+		for (Book b : bCollection) {
+			if(this.remove(b) == true) removedBooks.add(b);
+		}
+		return removedBooks;
 	}
 
 	@Override
@@ -269,7 +272,6 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public boolean correctBookISBN(long isbn, long newISBN) {
-
 		if (badISBN(isbn) || !badISBN(newISBN))
 			return false;
 		Book book = isbnHM.get(isbn);
@@ -281,44 +283,72 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public boolean correctBookAuthors(long isbn, Set<Author> newAuthors) {
-		// TODO Auto-generated method stub
-		// Sorter sorter = getSorter(BookSortWay.AUTHOR);
-		// for(Author a : newAuthors){
-		// TreeSet<Book> tsa = sorter.getIterable().
-		// if (tsa != null) tsb.addAll(tsa);
-		// else return EMPTY_TREE_SET;
-		// }
+		if (badISBN(isbn))
+			return false;
+		Book book = isbnHM.get(isbn);
+		remove(book);
+		book.setAuthors(newAuthors);
+		addBook(book);
 		return false;
 	}
 
 	@Override
 	public boolean correctBookTitle(long isbn, String newTitle) {
-		// TODO Auto-generated method stub
+		if (badISBN(isbn))
+			return false;
+		Book book = isbnHM.get(isbn);
+		remove(book);
+		book.setTitle(newTitle);
+		addBook(book);
 		return false;
 	}
 
 	@Override
 	public boolean correctBookPublisher(long isbn, Publisher newPublisher) {
-		// TODO Auto-generated method stub
+		if (badISBN(isbn))
+			return false;
+		Book book = isbnHM.get(isbn);
+		remove(book);
+		book.setPublisher(newPublisher);
+		addBook(book);
 		return false;
 	}
 
 	@Override
 	public boolean correctBookEditionDate(long isbn, LocalDate newEditionDate) {
-		// TODO Auto-generated method stub
+		if (badISBN(isbn))
+			return false;
+		Book book = isbnHM.get(isbn);
+		remove(book);
+		book.setEdition(newEditionDate);
+		addBook(book);
 		return false;
 	}
 
 	@Override
 	public boolean correctBookPrice(long isbn, double newPrice) {
-		// TODO Auto-generated method stub
+		if (badISBN(isbn))
+			return false;
+		Book book = isbnHM.get(isbn);
+		remove(book);
+		book.setPrice(newPrice);
+		addBook(book);
 		return false;
 	}
 
 	@Override
 	public boolean correctBookWithPattern(long isbn, Book pattern) {
-		// TODO Auto-generated method stub
-		return false;
+		if(badISBN(isbn) || !badISBN(pattern.getISBN())) return false;
+		Book book = isbnHM.get(isbn);
+		remove(book);
+		if(pattern.getISBN() != Book.DEFAULT_ISBN)book.setISBN(pattern.getISBN());
+		if(pattern.getAuthors() != Book.DEFAULT_AUTHORS)book.setAuthors(pattern.getAuthors());
+		if(pattern.getTitle() != Book.DEFAULT_TITLE)book.setTitle(pattern.getTitle());
+		if(pattern.getPublisher() != Book.DEFAULT_PUBLISHER)book.setPublisher(pattern.getPublisher());
+		if(pattern.getEdition() != Book.DEFAULT_EDITION_DATE)book.setEdition(pattern.getEdition());
+		if(pattern.getPrice() != Book.DEFAULT_PRICE)book.setPrice(pattern.getPrice());
+		addBook(book);
+		return true;
 	}
 
 	// all this depends on isbn stream;
@@ -328,10 +358,11 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	@Override
-	/**/public Iterable<Book> getBooksByAuthor(Author author) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public Iterable<Book> getBooksByAuthor(Author author) {
+		return streamValues(isbnHM)
+				.filter(b -> b.getAuthors().contains(author))
+				.collect(Collectors.toCollection(ArrayList::new));
+	}	
 
 	@Override
 	/**/public Iterable<Book> getBooksByAllAuthors(Collection<Author> aCollection) {
@@ -347,26 +378,30 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	/**/public Iterable<Book> getBooksByTitle(String title) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getTitle().equals(title))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
-	/**/public Iterable<Book> getBooksByPublisher(Publisher publicher) {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<Book> getBooksByPublisher(Publisher publicher) {
+		return streamValues(isbnHM)
+				.filter(b -> b.getPublisher().equals(publicher))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	/**/public Iterable<Book> getBooksByPublisherName(String pName) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getPublisher().getName().equals(pName))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
-	/**/public Iterable<Book> getBooksByPublisherCountry(Countries pCountry) {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<Book> getBooksByPublisherCountry(Countries pCountry) {
+		return streamValues(isbnHM)
+				.filter(b -> b.getPublisher().getCountry().equals(pCountry))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
