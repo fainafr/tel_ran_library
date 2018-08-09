@@ -5,17 +5,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Set;
 
-import comparators.BookPriceComparator;
+import comparators.BookGeneralComparator;
 import util.RandomLibrary;
 
-public class Book {
+public class Book implements Comparable<Book>{
 	
 	public static final long DEFAULT_ISBN = 0;
 	public static final Set<Author> DEFAULT_AUTHORS = Author.getEmptyAuthors();
 	public static final String DEFAULT_TITLE = "no title";
 	public static final Publisher DEFAULT_PUBLISHER = Publisher.getEmptyPublisher();
 	public static final LocalDate DEFAULT_EDITION_DATE = LocalDate.of(0, 1, 1);
-	public static final double DEFAULT_PRICE = 0.;
+	public static final double DEFAULT_PRICE = -1.;
 	
 	//private static final String TITLE_PREFIX = "title";
 	
@@ -142,5 +142,12 @@ public class Book {
 		} else if (!title.equals(other.title))
 			return false;
 		return true;
-	}	
+	}
+
+	@Override
+	public int compareTo(Book other) {
+		return BookGeneralComparator.getInstance().compare(this, other);
+	}
+	
+	
 }
