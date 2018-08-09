@@ -26,12 +26,12 @@ import util.MultiMap;
 import util.BookSortWay;
 
 public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
-	
-	//AF: map (books) + map (sorters) -> library with sorting views;
-	//RI: size of map (books) == size of each map in sorters; 
+
+	// AF: map (books) + map (sorters) -> library with sorting views;
+	// RI: size of map (books) == size of each map in sorters;
 	private HashMap<Long, Book> isbnHM;
 	private HashMap<BookSortWay, Sorter> sortedHM; // storage class
-	
+
 	public Library() {
 		emptyLibrary();
 	}
@@ -45,12 +45,11 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		isbnHM = new HashMap<Long, Book>();
 		sortedHM = new HashMap<BookSortWay, Sorter>();
 	}
-	
+
 	private void checkRep() {
-		streamValues(sortedHM)
-		.forEach(s -> assertTrue(s.getSize() == isbnHM.size()));
+		streamValues(sortedHM).forEach(s -> assertTrue(s.getSize() == isbnHM.size()));
 	}
-	
+
 	public void selfTest() {
 		checkRep();
 	}
@@ -58,17 +57,17 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	/**
 	 * Class that handles treemap for sorting;
 	 */
-	
+
 	private class Sorter {
 
 		private final BookSortWay sortWay;
-		private final MultiMapFillerByBook filler; 
+		private final MultiMapFillerByBook filler;
 		private final TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
-		
+
 		public BookSortWay getSortWay() {
 			return sortWay;
 		}
-		
+
 		private Sorter(final BookSortWay sortWay) {
 			this.sortWay = sortWay;
 			filler = new MultiMapFillerByBook(sortWay);
@@ -76,22 +75,41 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		}
 
 		private boolean putToIterableMap(Book book) {
-			return filler.putToIterableMap(sortingMap, book);
+			switch (sortWay) {
+			case AUTHOR: {
+				boolean res = false;
+				for (Author a : book.getAuthors())
+					res = res || filler.putToIterableMap(sortingMap, book);
+				return res;
+			}
+			default:
+				return filler.putToIterableMap(sortingMap, book);
+			}
 		}
-		
+
 		private boolean removeFromIterableMap(Book book) {
-			return filler.removeFromIterableMap(sortingMap, book);
+			switch (sortWay) {
+			case AUTHOR: {
+				boolean res = false;
+				for (Author a : book.getAuthors()) {
+					res = res || filler.removeFromIterableMap(sortingMap, book);
+				}
+				return res;
+			}
+			default:
+				return filler.removeFromIterableMap(sortingMap, book);
+			}
 		}
 
 		public Iterable<Book> getIterable() {
 			return MultiMap.getList(sortingMap);
 		}
-		
+
 		public long getSize() {
 			return MultiMap.getMultiMapSize(sortingMap);
 		}
 	}
-	
+
 	private Sorter getSorter(final BookSortWay sortWay) {
 		Sorter sorter = sortedHM.get(sortWay);
 		if (sorter == null) {
@@ -100,39 +118,40 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		}
 		return sorter;
 	}
-	
+
 	/**
 	 * @return stream of map Entries: ISBN and Book, unsorted
 	 */
-	private  <K, V> Stream<Map.Entry<K, V>> streamEntries(Map<K, V> map){
+	private <K, V> Stream<Map.Entry<K, V>> streamEntries(Map<K, V> map) {
 		return map.entrySet().stream();
 	}
-	
+
 	/**
 	 * @return stream of map values, unsorted
 	 */
-	private <K, V> Stream<V> streamValues(Map<K, V> map){
+	private <K, V> Stream<V> streamValues(Map<K, V> map) {
 		return map.entrySet().stream().map(e -> e.getValue());
 	}
-	
+
 	/**
 	 * @return Iterable of map values, unsorted
 	 */
-	private  <K, V> Iterable<V> toIterable(Map<K, V> map) {
+	private <K, V> Iterable<V> mapToIterable(Map<K, V> map) {
 		ArrayList<V> alb = new ArrayList<V>();
-	    streamValues(map).forEach(alb::add);
+		streamValues(map).forEach(alb::add);
 		return alb;
 	}
-	
+
 	/**
-	 * @param sorter instance of Sorter class
+	 * @param sorter
+	 *            instance of Sorter class
 	 * @return Iterable of Books, sorted
 	 */
-	private Iterable<Book> toIterableSorted(Sorter sorter) {
+	private Iterable<Book> booksToSortedIterable(Sorter sorter) {
 		streamValues(isbnHM).forEach(sorter::putToIterableMap);
 		return sorter.getIterable();
 	}
-	
+
 	@Override
 	public boolean addBook(Book book) {
 		if (book == null)
@@ -144,19 +163,22 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	@Override
-	/**/public boolean addAll(Collection<Book> bCollection) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean addAll(Collection<Book> bCollection) {
+		boolean res = true;
+		for (Book book : bCollection) res = addBook(book) && res;
+		return res;
 	}
 
 	@Override
-	/**/public boolean addLibary(Library lib) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean addLibary(Library lib) {
+		boolean res = true;
+		for (Book book : lib.getAllBooks()) res = addBook(book) && res;
+		return res;
 	}
 
 	@Override
 	public void fillRandomLibrary(int numBooks) {
+		emptyLibrary();
 		int counter = 0;
 		while (counter < numBooks) {
 			if (addBook(Book.getRandomBook()))
@@ -165,28 +187,33 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	@Override
-	/**/public void fillWithIterable(Iterable<Book> iterable) {
-		// TODO Auto-generated method stub
-
+	public void fillWithIterable(Iterable<Book> iterable) {
+		emptyLibrary();
+		for (Book book : iterable) addBook(book);
 	}
 
 	@Override
-	/**/public boolean contains(Book book) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean contains(Book book) {
+		return isbnHM.containsKey(book.getISBN());
 	}
 
 	@Override
-	/**/public boolean containsAll(Collection<Book> bCollection) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean containsAll(Collection<Book> bCollection) {
+		for(Book book : bCollection){
+			if (!contains(book)) return false;
+		}
+		return true;
 	}
 
 	@Override
 	/**/public Iterable<Book> containsAtLeastOne(Collection<Book> bCollection) {
-		// TODO Auto-generated method stub
-		return null;
+		TreeSet<Book> tsb = new TreeSet<>();
+		for(Book book : bCollection){
+			if (contains(book)) tsb.add(book);
+		}		
+		return tsb;
 	}
+	
 
 	@Override
 	public boolean remove(Book book) {
@@ -207,8 +234,14 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public Iterable<Book> retainAll(Collection<Book> bCollection) {
-		// TODO Auto-generated method stub
-		return null;
+		TreeSet<Book> res = new TreeSet<>();
+		for (Book book : isbnHM.values()){
+			if(!bCollection.contains(book)) {
+				remove(book);
+				res.add(book);
+			}
+		}
+		return res;
 	}
 
 	@Override
@@ -220,20 +253,44 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	@Override
-	/**/public Iterable<Book> getAllBooksFilteredWithPredicate(Predicate<Book> predicate) {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<Book> getAllBooksFilteredWithPredicate(Predicate<Book> predicate) {
+		TreeSet<Book> tsb = new TreeSet<>();
+		for (Book book : isbnHM.values()) {
+			if (predicate.test(book))
+				tsb.add(book);
+		}
+		return tsb;
+	}
+
+	private boolean badISBN(long isbn) {
+		return !isbnHM.containsKey(isbn);
 	}
 
 	@Override
 	public boolean correctBookISBN(long isbn, long newISBN) {
-		// TODO Auto-generated method stub
-		return false;
+
+		if (badISBN(isbn) || !badISBN(newISBN))
+			return false;
+		Book book = isbnHM.get(isbn);
+		remove(book);
+		book.setISBN(newISBN);
+		addBook(book);
+		return true;
+	}
+
+	private void setField(Book book, String field, Object value) {
+
 	}
 
 	@Override
 	public boolean correctBookAuthors(long isbn, Set<Author> newAuthors) {
 		// TODO Auto-generated method stub
+		// Sorter sorter = getSorter(BookSortWay.AUTHOR);
+		// for(Author a : newAuthors){
+		// TreeSet<Book> tsa = sorter.getIterable().
+		// if (tsa != null) tsb.addAll(tsa);
+		// else return EMPTY_TREE_SET;
+		// }
 		return false;
 	}
 
@@ -317,40 +374,41 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public Iterable<Book> getAllBooks() {
-		return toIterable(isbnHM);
+		return mapToIterable(isbnHM);
 	}
 
 	// sorts by 1st author;
-	// replace new Sorter with static sorter factory; 
-	// consider memento pattern or something so sorters wouldn't resort after each entry;
+	// replace new Sorter with static sorter factory;
+	// consider memento pattern or something so sorters wouldn't resort after each
+	// entry;
 	@Override
-	public Iterable<Book> getAllBooksSortedByAuthors(){
-		return toIterableSorted(getSorter(BookSortWay.AUTHOR));
+	public Iterable<Book> getAllBooksSortedByAuthors() {
+		return booksToSortedIterable(getSorter(BookSortWay.AUTHOR));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByTitle() {
-		return toIterableSorted(getSorter(BookSortWay.TITLE));
+		return booksToSortedIterable(getSorter(BookSortWay.TITLE));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPublisherNames() {
-		return toIterableSorted(getSorter(BookSortWay.PUBLISHER));
+		return booksToSortedIterable(getSorter(BookSortWay.PUBLISHER));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPublisherCountries() {
-		return toIterableSorted(getSorter(BookSortWay.PUBCOUNTRY));
+		return booksToSortedIterable(getSorter(BookSortWay.PUBCOUNTRY));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByEditionDate() {
-		return toIterableSorted(getSorter(BookSortWay.EDITIONDATE));
+		return booksToSortedIterable(getSorter(BookSortWay.EDITIONDATE));
 	}
 
 	@Override
 	public Iterable<Book> getAllBooksSortedByPrice() {
-		return toIterableSorted(getSorter(BookSortWay.PRICE));
+		return booksToSortedIterable(getSorter(BookSortWay.PRICE));
 	}
 
 	@Override
@@ -409,20 +467,17 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return isbnHM.size();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return isbnHM.isEmpty();
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-
+		emptyLibrary();
 	}
 
 }
