@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.TreeSet;
-
-import dao.Book;
 
 /**
  * 
@@ -63,7 +59,11 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 		V col = getMapCollection(map, key);
 		if (col == null)
 			return false;
-		return col.remove(element);
+		boolean res = true;
+		do { // had to remove same element several times to get rid of it;
+			res = res && (col.remove(element));
+		} while (res);		
+		return res;
 	}
 
 	/**
@@ -81,11 +81,27 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 		return lst;
 	}
 
+	/**
+	 * @param map multimap
+	 * @return integer count of multimap cells
+	 */
 	public static final <K, V extends Collection<E>, E> long getMultiMapSize(Map<K, V> map) {
 		long res = 0; 
 		for (Entry<K, V> entry : map.entrySet()) {
 				res+= entry.getValue().size();
 		}
 		return res;
+	}
+	
+	/**
+	 * prints a multimap into console
+	 * @param map multimap
+	 */
+	public static final <K, V extends Iterable<E>, E> void display(Map<K, V> map) {
+		System.out.println();
+		for (Entry<K, V> entry : map.entrySet()) {
+			long size = entry.getValue().spliterator().getExactSizeIfKnown();
+			System.out.println("SIZE= "+size+" "+ entry.toString());
+		}
 	}
 }

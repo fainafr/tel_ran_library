@@ -1,10 +1,6 @@
 package test;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.TreeSet;
-
-import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import comparators.BookGeneralComparator;
 import dao.Book;
@@ -41,19 +37,19 @@ public class Test {
 		Book rand = model.getAllBooks().iterator().next();
 		System.out.println("REMOVE I");
 		System.out.println(rand);
-		System.out.println(model.remove(rand));
+		model.remove(rand);
 		
 		System.out.println("BY AUTHORS");
 		for(Book b : model.getAllBooksSortedByAuthors()) System.out.println(b);
+		model.selfTest();
 		
 		Book randii = model.getAllBooks().iterator().next();
 		System.out.println("REMOVE II");
 		System.out.println(randii);
-		System.out.println(model.remove(randii));
+		model.remove(randii);
 		
 		System.out.println("BY AUTHORS");
 		for(Book b : model.getAllBooksSortedByAuthors()) System.out.println(b);
-	
 		model.selfTest();
 		
 		

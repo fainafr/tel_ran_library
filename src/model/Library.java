@@ -54,19 +54,18 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		checkRep();
 	}
 
+	
+	private static enum multiMapAction {
+		ADD, REMOVE;
+	}
 	/**
 	 * Class that handles treemap for sorting;
 	 */
-
 	private class Sorter {
 
 		private final BookSortWay sortWay;
 		private final MultiMapFillerByBook filler;
 		private final TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
-
-		public BookSortWay getSortWay() {
-			return sortWay;
-		}
 
 		private Sorter(final BookSortWay sortWay) {
 			this.sortWay = sortWay;
@@ -75,57 +74,55 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		}
 
 		private boolean putToIterableMap(Book book) {
-			switch (sortWay) {
-			case AUTHOR: {
-				boolean res = false;
-				for (Author a : book.getAuthors())
-					res = res || filler.putToIterableMap(sortingMap, book);
-				return res;
-			}
-			default:
-				return filler.putToIterableMap(sortingMap, book);
-			}
+			return updateMultiMap(book, multiMapAction.ADD);
 		}
 
 		private boolean removeFromIterableMap(Book book) {
+			return updateMultiMap(book, multiMapAction.REMOVE);
+		}
+
+		/**
+		 * updates the multimap state: adding / removing book 
+		 * @param book
+		 * @param action
+		 * @return result
+		 */
+		private boolean updateMultiMap(Book book, multiMapAction action) {
 			switch (sortWay) {
 			case AUTHOR: {
 				boolean res = false;
-				for (Author a : book.getAuthors()) {
-					res = res || filler.removeFromIterableMap(sortingMap, book);
+				for (Iterator<Author> i = book.getAuthors().iterator();i.hasNext();i.next()) {
+					res = res || action == multiMapAction.ADD ? filler.putToIterableMap(sortingMap, book)
+							: filler.removeFromIterableMap(sortingMap, book);
 				}
 				return res;
 			}
 			default:
-				return filler.removeFromIterableMap(sortingMap, book);
+				return action == multiMapAction.ADD ? filler.putToIterableMap(sortingMap, book)
+						: filler.removeFromIterableMap(sortingMap, book);
 			}
 		}
 
+		
 		public Iterable<Book> getIterable() {
 			return MultiMap.getList(sortingMap);
 		}
 
 		public long getSize() {
 			return MultiMap.getMultiMapSize(sortingMap);
-		}
+		}	
 	}
 
 	private Sorter getSorter(final BookSortWay sortWay) {
 		Sorter sorter = sortedHM.get(sortWay);
 		if (sorter == null) {
+			System.out.println(" NEW SORTER ");
 			sorter = new Sorter(sortWay);
 			sortedHM.put(sortWay, sorter);
 		}
 		return sorter;
 	}
-
-	/**
-	 * @return stream of map Entries: ISBN and Book, unsorted
-	 */
-	private <K, V> Stream<Map.Entry<K, V>> streamEntries(Map<K, V> map) {
-		return map.entrySet().stream();
-	}
-
+	
 	/**
 	 * @return stream of map values, unsorted
 	 */
@@ -165,14 +162,16 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	@Override
 	public boolean addAll(Collection<Book> bCollection) {
 		boolean res = true;
-		for (Book book : bCollection) res = addBook(book) && res;
+		for (Book book : bCollection)
+			res = addBook(book) && res;
 		return res;
 	}
 
 	@Override
 	public boolean addLibary(Library lib) {
 		boolean res = true;
-		for (Book book : lib.getAllBooks()) res = addBook(book) && res;
+		for (Book book : lib.getAllBooks())
+			res = addBook(book) && res;
 		return res;
 	}
 
@@ -189,7 +188,8 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	@Override
 	public void fillWithIterable(Iterable<Book> iterable) {
 		emptyLibrary();
-		for (Book book : iterable) addBook(book);
+		for (Book book : iterable)
+			addBook(book);
 	}
 
 	@Override
@@ -199,8 +199,9 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public boolean containsAll(Collection<Book> bCollection) {
-		for(Book book : bCollection){
-			if (!contains(book)) return false;
+		for (Book book : bCollection) {
+			if (!contains(book))
+				return false;
 		}
 		return true;
 	}
@@ -208,12 +209,12 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	@Override
 	/**/public Iterable<Book> containsAtLeastOne(Collection<Book> bCollection) {
 		TreeSet<Book> tsb = new TreeSet<>();
-		for(Book book : bCollection){
-			if (contains(book)) tsb.add(book);
-		}		
+		for (Book book : bCollection) {
+			if (contains(book))
+				tsb.add(book);
+		}
 		return tsb;
 	}
-	
 
 	@Override
 	public boolean remove(Book book) {
@@ -235,8 +236,8 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	@Override
 	public Iterable<Book> retainAll(Collection<Book> bCollection) {
 		TreeSet<Book> res = new TreeSet<>();
-		for (Book book : isbnHM.values()){
-			if(!bCollection.contains(book)) {
+		for (Book book : isbnHM.values()) {
+			if (!bCollection.contains(book)) {
 				remove(book);
 				res.add(book);
 			}
@@ -276,10 +277,6 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		book.setISBN(newISBN);
 		addBook(book);
 		return true;
-	}
-
-	private void setField(Book book, String field, Object value) {
-
 	}
 
 	@Override

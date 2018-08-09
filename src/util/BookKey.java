@@ -39,4 +39,9 @@ public class BookKey<T extends Comparable<? super T>> implements Comparable<Book
 	public int compareTo(BookKey<T> other) {
 		return this.data.compareTo(other.getData());
 	}
+	@Override
+	public String toString() {
+		return data.toString();
+	}
+	
 }
