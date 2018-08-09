@@ -539,5 +539,11 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	public void clear() {
 		emptyLibrary();
 	}
+	
+	public void displayAuthors() {
+		Sorter aut = sortedHM.get(BookSortWay.AUTHOR);
+		MultiMap.display(aut.sortingMap);
+		System.out.println("AUTHORS SIZE= "+aut.getSize());
+	}
 
 }

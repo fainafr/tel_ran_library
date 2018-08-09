@@ -59,10 +59,23 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 		V col = getMapCollection(map, key);
 		if (col == null)
 			return false;
+		// System.out.println("KEY "+key+" COL "+col);
+		// System.out.println("TO REMOVE ONE "+element);
+		// boolean res = col.remove(element);
+		// System.out.println(col);
+		// System.out.println();
+		// return res;
+		// return col.remove(element);
+		// res = true;
 		boolean res = true;
-		do { // had to remove same element several times to get rid of it;
+		do { // had to remove same element several times to get rid of it; why?
+			// System.out.println("KEY "+key+" COL "+col);
+			// System.out.println("TO REMOVE LOOP "+element);
 			res = res && (col.remove(element));
-		} while (res);		
+			// System.out.println(col);
+			// System.out.println();
+
+		} while (res);
 		return res;
 	}
 
@@ -82,26 +95,30 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 	}
 
 	/**
-	 * @param map multimap
+	 * @param map
+	 *            multimap
 	 * @return integer count of multimap cells
 	 */
 	public static final <K, V extends Collection<E>, E> long getMultiMapSize(Map<K, V> map) {
-		long res = 0; 
+		long res = 0;
 		for (Entry<K, V> entry : map.entrySet()) {
-				res+= entry.getValue().size();
+			res += entry.getValue().size();
 		}
 		return res;
 	}
-	
+
 	/**
 	 * prints a multimap into console
-	 * @param map multimap
+	 * 
+	 * @param map
+	 *            multimap
 	 */
 	public static final <K, V extends Iterable<E>, E> void display(Map<K, V> map) {
 		System.out.println();
+		System.out.println("DISPLAYING MAP");
 		for (Entry<K, V> entry : map.entrySet()) {
 			long size = entry.getValue().spliterator().getExactSizeIfKnown();
-			System.out.println("SIZE= "+size+" "+ entry.toString());
+			System.out.println("KEY= " + entry.getKey() + " SIZE= " + size + " " + entry.toString());
 		}
 	}
 }

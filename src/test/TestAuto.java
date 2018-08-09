@@ -195,14 +195,16 @@ public class TestAuto {
 	/**
 	 * Testing that the sorting, then removing, then sorting again works
 	 */
+	private static final int SORTITERATIONS = 20;
 	@Test
 	public void testMoneySort() {
+		
 		TreeSet<Book> lib = new TreeSet<>(BookGeneralComparator.getInstance());
 		Book bkMiddle = null;
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < SORTITERATIONS ; i++) {
 			Book rbk = Book.getRandomBook();
 			lib.add(rbk);
-			if (i == 500) bkMiddle = rbk;
+			if (i == SORTITERATIONS / 2) bkMiddle = rbk;
 		}
 		Library model = new Library();
 		for (Book b : lib)
@@ -221,5 +223,33 @@ public class TestAuto {
 			priceStart = b.getPrice();
 		}
 	}
+	
+	@Test
+	public void testAuthorst() {
+		
+		TreeSet<Book> lib = new TreeSet<>(BookGeneralComparator.getInstance());
+		Book bkMiddle = null;
+		for (int i = 0; i < SORTITERATIONS ; i++) {
+			Book rbk = Book.getRandomBook();
+			lib.add(rbk);
+			if (i == SORTITERATIONS / 2) bkMiddle = rbk;
+		}
+		Library model = new Library();
+		for (Book b : lib)
+			model.addBook(b);
+		model.getAllBooksSortedByAuthors();
+	//	model.displayAuthors();
+//		System.out.println(model.size());
+//		System.out.println("Removing");
+		for (Book b : lib.tailSet(bkMiddle))
+	//		System.out.println(b.getISBN()+" "+b.getAuthors());
+		model.removeAll(lib.tailSet(bkMiddle));
+	//	System.out.println("============");
+	//	model.displayAuthors();
+	//	System.out.println(model.size());
+		assertTrue(model.selfTestOK());
+	}
+	
+	
 
 }
