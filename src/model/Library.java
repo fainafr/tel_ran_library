@@ -28,11 +28,21 @@ import util.BookSortWay;
 
 public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
-	// AF: map (books) + map (sorters) -> library with sorting views;
-	// RI: size of map (books) == size of each map in sorters;
+	/*
+	 *  Abstraction function: map (books) + map (sorters) -> library with sorting views;
+	 *  Rep invariant: size of map (books) == size of each map in sorters;
+	 */
+	/*
+	 * main storage for books by ISBN
+	 */
 	private HashMap<Long, Book> isbnHM;
-	private HashMap<BookSortWay, Sorter> sortedHM; // storage class
-
+	/*
+	 * storage map of Sorters
+	 * each sorter holds a multimap: BookKey to set<Book>
+	 * BookKey is a type-safe representation of Book field
+	 */
+	private HashMap<BookSortWay, Sorter> sortedHM; // 
+	
 	public Library() {
 		emptyLibrary();
 	}
@@ -56,7 +66,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	/**
 	 * wrapper procedure for testing
-	 * @return
+	 * @return true if class self-tested successfully
 	 */
 	public boolean selfTestOK() {
 		boolean repIsOK = checkRep(); 
@@ -64,8 +74,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		return repIsOK;
 	}
 
-	
-	private static enum multiMapAction {
+	private static enum multiMapAction { //for DRY with multimap actions
 		ADD, REMOVE;
 	}
 	/**
@@ -73,9 +82,12 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	 */
 	private class Sorter {
 
-		private final BookSortWay sortWay;
-		private final MultiMapFillerByBook filler;
-		private final TreeMap<BookKey<?>, TreeSet<Book>> sortingMap;
+		/*
+		 * Abstraction function: sortingMap -> Iterable<Book>, sorted
+		 */
+		private final BookSortWay sortWay; // encapsulated sorting field
+		private final MultiMapFillerByBook filler; // works with the multimap 
+		private final TreeMap<BookKey<?>, TreeSet<Book>> sortingMap; //multimap to store results
 
 		private Sorter(final BookSortWay sortWay) {
 			this.sortWay = sortWay;
@@ -93,9 +105,9 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 		/**
 		 * updates the multimap state: adding / removing book 
-		 * @param book
-		 * @param action
-		 * @return result
+		 * @param book Book
+		 * @param action multiMapAction 
+		 * @return result boolean add/remove success
 		 */
 		private boolean updateMultiMap(Book book, multiMapAction action) {
 			switch (sortWay) {
@@ -112,17 +124,26 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 						: filler.removeFromIterableMap(sortingMap, book);
 			}
 		}
-
 		
+		/**
+		 * @return iterable of Books sorted by this Sorter
+		 */
 		public Iterable<Book> getIterable() {
 			return MultiMap.getList(sortingMap);
 		}
 
+		/**
+		 * @return multimap size;
+		 */
 		public long getSize() {
 			return MultiMap.getMultiMapSize(sortingMap);
 		}	
 	}
-
+	
+	/**
+	 * @param sortWay BookSortWay
+	 * @return existing Sorter, or a new one;
+	 */
 	private Sorter getSorter(final BookSortWay sortWay) {
 		Sorter sorter = sortedHM.get(sortWay);
 		if (sorter == null) {
@@ -133,6 +154,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 	
 	/**
+	 * @param map any Map
 	 * @return stream of map values, unsorted
 	 */
 	private <K, V> Stream<V> streamValues(Map<K, V> map) {
@@ -140,6 +162,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	/**
+	 * @param map any Map
 	 * @return Iterable of map values, unsorted
 	 */
 	private <K, V> Iterable<V> mapToIterable(Map<K, V> map) {
@@ -216,7 +239,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	@Override
-	/**/public Iterable<Book> containsAtLeastOne(Collection<Book> bCollection) {
+	public Iterable<Book> containsAtLeastOne(Collection<Book> bCollection) {
 		TreeSet<Book> tsb = new TreeSet<>();
 		for (Book book : bCollection) {
 			if (contains(book))
@@ -360,7 +383,6 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		return true;
 	}
 
-	// all this depends on isbn stream;
 	@Override
 	public Book getBookByISBN(long isbn) {
 		return isbnHM.get(isbn);
@@ -418,10 +440,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		return mapToIterable(isbnHM);
 	}
 
-	// sorts by 1st author;
-	// replace new Sorter with static sorter factory;
-	// consider memento pattern or something so sorters wouldn't resort after each
-	// entry;
+	// sorts by 1st author; serious requirement facilitation
 	@Override
 	public Iterable<Book> getAllBooksSortedByAuthors() {
 		return booksToSortedIterable(getSorter(BookSortWay.AUTHOR));

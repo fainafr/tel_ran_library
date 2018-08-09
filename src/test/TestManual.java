@@ -16,17 +16,14 @@ public class TestManual {
 		for (Book b : lib)
 			model.addBook(b);
 
-		
 		testRemovingsI(model);
 		
-		testCorretionsI(model);
+		testCorrectionsI(model);
 		
-		testSortings(model);
-		
-		
+		testSortings(model);	
 	}
 
-	private static void testCorretionsI(Library model) {
+	private static void testCorrectionsI(Library model) {
 		System.out.println("CORRECTIONS");
 		System.out.println("ISBN");
 		Book randiii = model.getAllBooks().iterator().next();

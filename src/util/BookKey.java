@@ -8,6 +8,7 @@ import dao.Publisher;
 
 /**
  * Type safety class for Library
+ * Makes sure that the BookKey<T> is always used with the correct T;
  * @param <T> any type that the Book class returns
  */
 public class BookKey<T extends Comparable<? super T>> implements Comparable<BookKey<T>>{
