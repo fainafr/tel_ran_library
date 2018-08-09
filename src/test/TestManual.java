@@ -6,11 +6,11 @@ import comparators.BookGeneralComparator;
 import dao.Book;
 import model.Library;
 
-public class Test {
-
+public class TestManual {
+	
 	public static void main(String[] args) {
 		TreeSet<Book> lib = new TreeSet<>(BookGeneralComparator.getInstance());
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 10; i++)
 			lib.add(Book.getRandomBook());
 		Library model = new Library();
 		for (Book b : lib)
@@ -36,7 +36,7 @@ public class Test {
 		model.correctBookISBN(randiii.getISBN(), randiii.getISBN()+1);
 		System.out.println();
 		for(Book b : model.getAllBooks())System.out.println(b);
-		model.selfTest();
+		model.selfTestOK();
 	}
 
 	private static void testRemovingsI(Library model) {
@@ -47,7 +47,7 @@ public class Test {
 		
 		System.out.println("BY AUTHORS");
 		for(Book b : model.getAllBooksSortedByAuthors()) System.out.println(b);
-		model.selfTest();
+		model.selfTestOK();
 		
 		Book randii = model.getAllBooks().iterator().next();
 		System.out.println("REMOVE II");
@@ -56,7 +56,7 @@ public class Test {
 		
 		System.out.println("BY AUTHORS");
 		for(Book b : model.getAllBooksSortedByAuthors()) System.out.println(b);
-		model.selfTest();
+		model.selfTestOK();
 	}
 
 	private static void testSortings(Library model) {

@@ -47,12 +47,21 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 		sortedHM = new HashMap<BookSortWay, Sorter>();
 	}
 
-	private void checkRep() {
-		streamValues(sortedHM).forEach(s -> assertTrue(s.getSize() == isbnHM.size()));
+	/**
+	 * @return true if the representation of class is ok;
+	 */
+	private boolean checkRep() {
+		return streamValues(sortedHM).allMatch(s-> s.getSize() == isbnHM.size());
 	}
 
-	public void selfTest() {
-		checkRep();
+	/**
+	 * wrapper procedure for testing
+	 * @return
+	 */
+	public boolean selfTestOK() {
+		boolean repIsOK = checkRep(); 
+		assertTrue(repIsOK);
+		return repIsOK;
 	}
 
 	
