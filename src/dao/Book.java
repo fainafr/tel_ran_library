@@ -88,8 +88,7 @@ public class Book {
 
 	@Override
 	public String toString() {
-		return "Book: "+ ISBN + "; author(s): "+ authors + "; '" + title + "'; publisher: " + publisher
-				+ "; " + edition.format(dtf) + "; " + String.format("%.2f", price);
+		return "Book: "+ ISBN + "; author(s): "+ authors;
 	}
 
 	@Override

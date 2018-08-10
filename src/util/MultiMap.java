@@ -59,24 +59,27 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 		V col = getMapCollection(map, key);
 		if (col == null)
 			return false;
-		// System.out.println("KEY "+key+" COL "+col);
-		// System.out.println("TO REMOVE ONE "+element);
-		// boolean res = col.remove(element);
-		// System.out.println(col);
-		// System.out.println();
-		// return res;
-		// return col.remove(element);
-		// res = true;
-		boolean res = true;
-		do { // had to remove same element several times to get rid of it; why?
-			// System.out.println("KEY "+key+" COL "+col);
-			// System.out.println("TO REMOVE LOOP "+element);
-			res = res && (col.remove(element));
-			// System.out.println(col);
-			// System.out.println();
-
-		} while (res);
-		return res;
+//     	 System.out.println();
+//		 System.out.println("KEY "+key+" COL "+col);
+//		 System.out.println("TO REMOVE ONE "+element);
+		 boolean res = col.remove(element);
+//		 System.out.println(col);
+//		 System.out.println(res);
+//		 display(map);
+		 return res;
+		 
+//		// return col.remove(element);
+//		// res = true;
+//		boolean res = true;
+//		do { // had to remove same element several times to get rid of it; why?
+//			// System.out.println("KEY "+key+" COL "+col);
+//			// System.out.println("TO REMOVE LOOP "+element);
+//			res = res && (col.remove(element));
+//			// System.out.println(col);
+//			// System.out.println();
+//
+//		} while (res);
+//		return res;
 	}
 
 	/**
