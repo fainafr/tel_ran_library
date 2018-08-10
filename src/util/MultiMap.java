@@ -57,11 +57,7 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 		V col = map.get(key);
 		if (col == null)
 			return false;
-		boolean res = true;
-		do { // had to remove same element several times to get rid of it;
-			res = res && (col.remove(element));
-		} while (res);		
-		return res;
+		return col.remove(element);
 	}
 
 	/**
