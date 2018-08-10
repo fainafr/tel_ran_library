@@ -31,15 +31,13 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 		K key = getKey(element);
 		if (key == null)
 			return false;
-		V col = getMapCollection(map, key);
+		V col = map.get(key);
 		if (col == null) {
 			col = createMapCollection();
 			map.put(key, col);
 		}
 		return col.add(element);
 	}
-
-	public abstract V getMapCollection(Map<K, V> map, K key);
 
 	public abstract V createMapCollection();
 
@@ -56,7 +54,7 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 	 */
 	public boolean removeFromIterableMap(Map<K, V> map, E element) {
 		K key = getKey(element);
-		V col = getMapCollection(map, key);
+		V col = map.get(key);
 		if (col == null)
 			return false;
 		boolean res = true;

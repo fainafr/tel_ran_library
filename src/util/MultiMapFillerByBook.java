@@ -1,7 +1,6 @@
 package util;
 
 import java.util.Comparator;
-import java.util.Map;
 import java.util.TreeSet;
 
 import comparators.BookGeneralComparator;
@@ -15,15 +14,10 @@ public class MultiMapFillerByBook extends MultiMap<BookKey<?>, TreeSet<Book>, Bo
 
 	private static final Comparator<Book> generalComparator = BookGeneralComparator.getInstance();
 
-	private BookSortWay sortBy;
+	private BookSortWay sortWay;
 
 	public MultiMapFillerByBook(BookSortWay sortBy) {
-		this.sortBy = sortBy;
-	}
-
-	@Override
-	public TreeSet<Book> getMapCollection(Map<BookKey<?>, TreeSet<Book>> map,  BookKey<?> key) {
-		return map.get(key);
+		this.sortWay = sortBy;
 	}
 
 	@Override
@@ -33,6 +27,6 @@ public class MultiMapFillerByBook extends MultiMap<BookKey<?>, TreeSet<Book>, Bo
 
 	@Override
 	public BookKey<?> getKey(Book element) {
-		return sortBy.getKey(element);
+		return sortWay.getKey(element);
 	}
 }
