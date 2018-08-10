@@ -115,8 +115,8 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 				boolean res = false;
 				int i = 0;
 				for (Iterator<Author> it = book.getAuthors().iterator();it.hasNext();it.next()) {
-					res = res || action == multiMapAction.ADD ? filler.putToIterableMap(sortingMap, book)
-							: filler.removeFromIterableMap(sortingMap, book);
+					res = res || ((action == multiMapAction.ADD) ? filler.putToIterableMap(sortingMap, book)
+							: filler.removeFromIterableMap(sortingMap, book));
 								if (action == multiMapAction.REMOVE) {
 								System.out.println();
 								System.out.println(book+" Remove "+book.getAuthors().toArray()[i]);
