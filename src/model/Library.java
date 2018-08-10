@@ -114,8 +114,8 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 			case AUTHOR: {
 				boolean res = false;
 				for (Iterator<Author> i = book.getAuthors().iterator();i.hasNext();i.next()) {
-					res = res || action == multiMapAction.ADD ? filler.putToIterableMap(sortingMap, book)
-							: filler.removeFromIterableMap(sortingMap, book);
+					res = res || (action == multiMapAction.ADD ? filler.putToIterableMap(sortingMap, book)
+							: filler.removeFromIterableMap(sortingMap, book));
 				}
 				return res;
 			}
