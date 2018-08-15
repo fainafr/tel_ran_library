@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 
@@ -90,4 +91,16 @@ public class MultiMap<K,E>{
 	public Map<K, Collection<E>> map(){return map;}
 	public MapEnum getMapClass() {return mapClass;}
 	public CollectionEnum getCollectionClass() {return collectionClass;}
+	
+	/**
+	 * @param multiMap multimap
+	 * @return integer count of multimap cells
+	 */
+	public static final <K, E> long getMultiMapSize(MultiMap<K, E> multiMap) {
+		long res = 0; 
+		for (Entry<K, Collection<E>> entry : multiMap.map.entrySet()) {
+				res+= entry.getValue().size();
+		}
+		return res;
+	}
 }
