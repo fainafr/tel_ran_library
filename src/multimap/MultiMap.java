@@ -103,4 +103,16 @@ public class MultiMap<K,E>{
 		}
 		return res;
 	}
+	
+	/**
+	 * prints a multimap into console
+	 * @param map multimap
+	 */
+	public static final <K, E> void display(MultiMap<K, E> multiMap) {
+		System.out.println();
+		for (Entry<K, Collection<E>> entry : multiMap.map.entrySet()) {
+			long size = entry.getValue().spliterator().getExactSizeIfKnown();
+			System.out.println("SIZE= "+size+" "+ entry.toString());
+		}
+	}
 }

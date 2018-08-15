@@ -154,14 +154,16 @@ public class LibraryBasic implements ILibraryBasic{
 	 * @return true if the representation of class is ok;
 	 */
 	private boolean checkRep() {
-		DaoField<Book>daofield = null;
-		for (Entry<BookFieldNames, DaoField<Book>> e : fieldsMap.entrySet()) {
-				daofield = e.getValue();
-				long multiMapSize = MultiMap.getMultiMapSize(daofield.getMap());
-				System.out.println(e.getKey());
-				System.out.println("MMSIZE= "+multiMapSize+" HMSIZE= "+isbnHM.size());
-				if (multiMapSize != isbnHM.size()) return false;
-		}
+//		DaoField<Book>daofield = null;
+//		for (Entry<BookFieldNames, DaoField<Book>> e : fieldsMap.entrySet()) {
+//				daofield = e.getValue();
+//				MultiMap<?, Book> mmap = daofield.getMap();
+//				long multiMapSize = MultiMap.getMultiMapSize(mmap);
+//				System.out.println(e.getKey());
+//				System.out.println("MMSIZE= "+multiMapSize+" HMSIZE= "+isbnHM.size());
+//				MultiMap.display(mmap);
+//				if (multiMapSize != isbnHM.size()) return false;
+//		}
 		return true;
 	}
 

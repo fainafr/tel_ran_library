@@ -215,7 +215,7 @@ public class TestAuto {
 	}
 
 	private void moneySortCheck(LibraryExtended model) {
-		Iterable<Book> alp = model.getAllBooksSortedBy(BookFieldNames.AUTHOR);
+		Iterable<Book> alp = model.getAllBooksSortedBy(BookFieldNames.PRICE);
 		double priceStart = alp.iterator().next().getPrice();
 		for (Book b : alp) {
 			assertTrue(b.getPrice() >= priceStart);
