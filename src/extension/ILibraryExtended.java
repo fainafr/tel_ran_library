@@ -1,4 +1,5 @@
-package model;
+package extension;
+
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -7,69 +8,37 @@ import java.util.function.Predicate;
 
 import dao.Author;
 import dao.Book;
+import model.LibraryBasic;
 
-public interface ILibraryA {
+public interface ILibraryExtended {
 	
-	// add
-	public boolean addBook(Book book);
 	public boolean addAll(Collection<Book> bCollection);
-	public boolean addLibary(Library lib);
+	public boolean addLibary(LibraryBasic lib);
 	
-	//fill
-	public void fillRandomLibrary(int numBooks);
 	public void fillWithIterable(Iterable<Book> iterable);
 	
-	//contains
-	public boolean contains(Book book);
 	public boolean containsAll(Collection<Book> bCollection);
 	public Iterable<Book> containsAtLeastOne(Collection<Book> bCollection);
 	
-	//remove
-	public boolean remove(Book book);
 	public Iterable<Book> removeAll(Collection<Book> bCollection);
 	public Iterable<Book> retainAll(Collection<Book> bCollection);
-	
-	// sort and filter
 	
 	public Iterable<Book> getAllBooksSortedWithComparator(Comparator<Book> comparator);
 	public Iterable<Book> getAllBooksFilteredWithPredicate(Predicate<Book> predicate);
 	
-	// correct
-	
-	public boolean correctBookISBN(long isbn, long newISBN);
-	public boolean correctBookByField(long isbn, Object newValue, String field);
-	
 	public boolean correctBookWithPattern(long isbn, Book pattern);
-		
-	//queries
 	
-	public Book getBookByISBN(long isbn);
 	public Iterable<Book> getBooksByAllAuthors(Collection<Author> aCollection);
 	public Iterable<Book> getBooksByAtLeastOneAuthor(Collection<Author> aCollection);
-	public Iterable<Book> getAllBooksByField(String field);
-	
-	//all books
-	
-	public Iterable<Book> getAllBooks();                  //sorted by ISBN
-	public Iterable<Book> getAllBooksSortedByField(String field);
-	
-	//range queries
 	
 	public Iterable<Book> getBooksPrintedBefore(LocalDate max);
 	public Iterable<Book> getBooksPrintedBefore(int year);
 	public Iterable<Book> getBooksPrintedAfter(LocalDate min);
 	public Iterable<Book> getBooksPrintedAfter(int year);
-	public Iterable<Book> getBooksPrintedInRange(LocalDate min,LocalDate max);
 	public Iterable<Book> getBooksPrintedInRange(int yearMin, int yearMax);
 	
 	public Iterable<Book> getBooksCheaperThan(double maxPrice);
 	public Iterable<Book> getBooksMoreExpensiveThan(double minPrice);
-	public Iterable<Book> getBooksPricedInRange(double minPrice, double maxPrice);
-	
-	//size
-	public int size();
-	public boolean isEmpty();
-	public void clear();
+		
 
 }
-	

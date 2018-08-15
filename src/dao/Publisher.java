@@ -6,8 +6,7 @@ public class Publisher implements Comparable<Publisher>{
 
 	public static final Countries DEFAULT_COUNTRY = Countries.unknown;
 	public static final String DEFAULT_PUBLISHER_NAME = "no name";
-	
-	//private static final String PUBLISHER_NAME_PREFIX = "pName";
+	public static final Countries[] countries = Countries.values();
 	
 	private Countries country;
 	private String name;
@@ -24,16 +23,14 @@ public class Publisher implements Comparable<Publisher>{
 	public void setCountry(Countries country) {this.country = country == null ? DEFAULT_COUNTRY : country;}
 	public void setName(String name) {this.name = name == null ? DEFAULT_PUBLISHER_NAME : name;}
 
-	public static Publisher getEmptyPublisher(){return new Publisher(null, null);}
+	public static Publisher getEmptyPublisher(){return new Publisher(DEFAULT_COUNTRY, DEFAULT_PUBLISHER_NAME);}
 	
-	//private static final int NUM_PUBLISHER_NAMES = 10;
 	private static final String[] PUBLISHER_NAMES 
 		= {"Star","Red Star","Black Star","Golden Star","Dead Star", "Sun", "Green Sun", "Sea", "Yellow Sea", "Red Sea"};
 	
 	public static Publisher getRandomPublisher(){
-		Countries publisherCountry = RandomLibrary.getRandomCountry();
+		Countries publisherCountry = getRandomCountry();
 		String publisherName = PUBLISHER_NAMES[RandomLibrary.gen.nextInt(PUBLISHER_NAMES.length)];
-				//PUBLISHER_NAME_PREFIX+"#"+RandomLibrary.gen.nextInt(NUM_PUBLISHER_NAMES);
 		return new Publisher(publisherCountry, publisherName);
 	}
 
@@ -46,6 +43,18 @@ public class Publisher implements Comparable<Publisher>{
 	public int compareTo(Publisher other) {
 		int c = name.compareTo(other.name);
 		return c == 0 ? country.name().compareTo(other.country.name()) : c;
+	}
+	
+	private static Countries getRandomCountry(){
+		
+		double random = RandomLibrary.gen.nextDouble();
+		
+		double probability = countries[0].getProbability();
+		for (int i=0; i<countries.length;){
+			if (random < probability) return countries[i];
+			else probability += countries[++i].getProbability();
+		}
+		return null;
 	}
 
 	@Override

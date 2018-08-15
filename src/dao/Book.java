@@ -1,6 +1,7 @@
 package dao;
 
 import java.time.LocalDate;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Set;
@@ -16,8 +17,6 @@ public class Book implements Comparable<Book>{
 	public static final Publisher DEFAULT_PUBLISHER = Publisher.getEmptyPublisher();
 	public static final LocalDate DEFAULT_EDITION_DATE = LocalDate.of(0, 1, 1);
 	public static final double DEFAULT_PRICE = -1.;
-	
-	//private static final String TITLE_PREFIX = "title";
 	
 	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy", new Locale("us"));
 	
@@ -64,7 +63,6 @@ public class Book implements Comparable<Book>{
 	private static final long OLDEST_BOOK_AGE = 100;
 	private static final double MIN_BOOK_PRICE = 100.;
 	private static final double MAX_BOOK_PRICE = 1000.;
-	//private static final int NUM_BOOK_TITLES = 10;
 	private static final String[] TITLES
 		= {"Day and Night","Summer and Winter","Bread and Stone","Eagle and Snake","Head and Ass",
 		   "Love and Hate","Red and Black","Girls and Vodka","Church and Yoghurt","Drugs and Sex"};
@@ -85,6 +83,11 @@ public class Book implements Comparable<Book>{
 				RandomLibrary.getRandomDate(oldest, now),
 				RandomLibrary.nextDoubleRange(MIN_BOOK_PRICE, MAX_BOOK_PRICE)
 			);
+	}
+	
+	@Override
+	public int compareTo(Book other) {
+		return BookGeneralComparator.getInstance().compare(this, other);
 	}
 
 	@Override
@@ -143,11 +146,4 @@ public class Book implements Comparable<Book>{
 			return false;
 		return true;
 	}
-
-	@Override
-	public int compareTo(Book other) {
-		return BookGeneralComparator.getInstance().compare(this, other);
-	}
-	
-	
 }

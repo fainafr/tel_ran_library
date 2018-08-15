@@ -31,18 +31,6 @@ public class RandomLibrary {
 		return sb.toString();
 	}
 	
-	public static Countries getRandomCountry(){
-		
-		double random = gen.nextDouble();
-		
-		double probability = countries[0].getProbability();
-		for (int i=0; i<countries.length;){
-			if (random < probability) return countries[i];
-			else probability += countries[++i].getProbability();
-		}
-		return null;
-	}
-	
 	public static LocalDate getRandomDate(LocalDate from, LocalDate to){
 		return LocalDate.ofEpochDay((long)nextIntRange((int)from.toEpochDay(), (int)to.toEpochDay()));
 	}

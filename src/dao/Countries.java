@@ -9,5 +9,4 @@ public enum Countries {
 		this.probability = probability;
 	}
 	public double getProbability(){return probability;}
-	
 }
