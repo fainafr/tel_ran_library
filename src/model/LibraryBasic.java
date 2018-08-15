@@ -1,5 +1,7 @@
 package model;
 
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -147,4 +149,29 @@ public class LibraryBasic implements ILibraryBasic{
 		isbnHM.clear();
 		BookFieldsMap.setEmptyMaps();
 	}
+	
+	/**
+	 * @return true if the representation of class is ok;
+	 */
+	private boolean checkRep() {
+		DaoField<Book>daofield = null;
+		for (Entry<BookFieldNames, DaoField<Book>> e : fieldsMap.entrySet()) {
+
+				daofield = e.getValue();
+				daofield.getMap().
+
+		}
+		return (s-> s.getSize() == isbnHM.size());
+	}
+
+	/**
+	 * wrapper procedure for testing
+	 * @return true if class self-tested successfully
+	 */
+	public boolean selfTestOK() {
+		boolean repIsOK = checkRep(); 
+		assertTrue(repIsOK);
+		return repIsOK;
+	}
+	
 }
