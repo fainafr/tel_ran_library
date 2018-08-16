@@ -177,7 +177,7 @@ public class TestAuto {
 		runAllSorts(model);
 		assertTrue(model.selfTestOK());
 	}
-	
+	  
 	/**
 	 * RemoveAll works correctly
 	 */

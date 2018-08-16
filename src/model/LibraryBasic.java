@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import dao.Author;
@@ -18,8 +17,15 @@ import multimap.MultiMap;
 
 public class LibraryBasic implements ILibraryBasic{
 	
-	protected HashMap<BookFieldNames, DaoField<Book>> fieldsMap = BookFieldsMap.fieldsMap;
+	// relative decoupling achieved - can use another fieldsmap class;
+	// no rep invariant check;
+	protected HashMap<BookFieldNames, DaoField<Book>> fieldsMap = BookFieldsMap.fieldsMap; 
+
 	protected HashMap<Long, Book> isbnHM = new HashMap<>();
+
+	//warnings: imperfections provoke decay
+	//better go without warnings and without castings at all - see getBooksBy
+	//overall idea of storing stuff in daofield as multimap with functions as data is bold and mind-opening;
 	protected MultiMap authorTM = BookFieldsMap.fieldsMap.get(BookFieldNames.AUTHOR).getMap();
 	protected MultiMap titleTM = BookFieldsMap.fieldsMap.get(BookFieldNames.TITLE).getMap();
 	protected MultiMap publisherHM = BookFieldsMap.fieldsMap.get(BookFieldNames.PUBLISHER).getMap();
@@ -40,7 +46,7 @@ public class LibraryBasic implements ILibraryBasic{
 			else {
 				daofield = e.getValue();
 				daofield.getMap().put(daofield.getGetter().apply(book), book);
-			}
+			} // benefit: relatively transparent of what exactly is going on
 		}
 		return true;
 	}
@@ -57,6 +63,7 @@ public class LibraryBasic implements ILibraryBasic{
 		return isbnHM.containsKey(book.getISBN());
 	}
 
+	// DRY level OK here;
 	@Override
 	public boolean remove(Book book) {
 		
@@ -70,7 +77,7 @@ public class LibraryBasic implements ILibraryBasic{
 			else {
 				daofield = e.getValue();
 				daofield.getMap().remove(daofield.getGetter().apply(book), book);
-			}
+			} // benefit: relatively transparent of what exactly is going on
 		}
 		return true;
 	}
@@ -86,7 +93,7 @@ public class LibraryBasic implements ILibraryBasic{
 		
 		Book book = isbnHM.get(isbn);
 		remove(book);
-		fieldsMap.get(field).getSetter().accept(book, value);
+		fieldsMap.get(field).getSetter().accept(book, value); //I'd argue this is beautiful
 		addBook(book);
 		return true;
 	}
@@ -154,16 +161,7 @@ public class LibraryBasic implements ILibraryBasic{
 	 * @return true if the representation of class is ok;
 	 */
 	private boolean checkRep() {
-//		DaoField<Book>daofield = null;
-//		for (Entry<BookFieldNames, DaoField<Book>> e : fieldsMap.entrySet()) {
-//				daofield = e.getValue();
-//				MultiMap<?, Book> mmap = daofield.getMap();
-//				long multiMapSize = MultiMap.getMultiMapSize(mmap);
-//				System.out.println(e.getKey());
-//				System.out.println("MMSIZE= "+multiMapSize+" HMSIZE= "+isbnHM.size());
-//				MultiMap.display(mmap);
-//				if (multiMapSize != isbnHM.size()) return false;
-//		}
+		//TODO: manually-generated method stub;
 		return true;
 	}
 
