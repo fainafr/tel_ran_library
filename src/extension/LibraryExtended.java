@@ -91,6 +91,7 @@ public class LibraryExtended extends LibraryBasic implements ILibraryExtended{
 		return tsb;
 	}
 
+	// here and on: castings impede decoupling;
 	@Override
 	public Iterable<Book> getBooksByAllAuthors(Collection<Author> aCollection) {
 		TreeSet<Book> tsb = new TreeSet<>();
@@ -138,6 +139,7 @@ public class LibraryExtended extends LibraryBasic implements ILibraryExtended{
 		return true;
 	}
 
+	
 	@Override
 	public Iterable<Book> getBooksPrintedBefore(LocalDate max) {
 		ArrayList<Book> alb = new ArrayList<>();

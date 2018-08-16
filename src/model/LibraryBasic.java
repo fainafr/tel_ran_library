@@ -23,9 +23,8 @@ public class LibraryBasic implements ILibraryBasic{
 
 	protected HashMap<Long, Book> isbnHM = new HashMap<>();
 
-	//warnings: imperfections provoke decay
-	//better go without warnings and without castings at all - see getBooksBy
 	//overall idea of storing stuff in daofield as multimap with functions as data is bold and mind-opening;
+	//using a list of multimaps: transparency in exchange for better decoupling
 	protected MultiMap authorTM = BookFieldsMap.fieldsMap.get(BookFieldNames.AUTHOR).getMap();
 	protected MultiMap titleTM = BookFieldsMap.fieldsMap.get(BookFieldNames.TITLE).getMap();
 	protected MultiMap publisherHM = BookFieldsMap.fieldsMap.get(BookFieldNames.PUBLISHER).getMap();
