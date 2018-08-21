@@ -1,5 +1,8 @@
 package test;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.TreeSet;
 
 import comparators.BookGeneralComparator;
@@ -8,19 +11,46 @@ import model.Library;
 
 public class TestManual {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		TreeSet<Book> lib = new TreeSet<>(BookGeneralComparator.getInstance());
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 100; i++)
 			lib.add(Book.getRandomBook());
 		Library model = new Library();
 		for (Book b : lib)
 			model.addBook(b);
+		
+		dumpToFile(model);
 
+		
+		
 		testRemovingsI(model);
 		
 		testCorrectionsI(model);
 		
 		testSortings(model);	
+	}
+	
+	/**
+	 * Dumps any library to "Library.txt" in the root
+	 * @param lib any library
+	 * @throws IOException
+	 */
+	private static void dumpToFile(Library lib) throws IOException{
+		File file = new File("Library.txt");
+
+		file.createNewFile();
+
+		PrintWriter filewriter = null;
+
+		filewriter = new PrintWriter("Library.txt");
+
+		// overrites
+		for (Book book : lib.getAllBooks()) filewriter.println(book.toString());
+
+		// apply
+		filewriter.flush();
+
+		filewriter.close();
 	}
 
 	private static void testCorrectionsI(Library model) {
