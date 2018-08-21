@@ -422,7 +422,7 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 	}
 
 	@Override
-	/**/public Iterable<Book> getBooksByPublisherName(String pName) {
+	public Iterable<Book> getBooksByPublisherName(String pName) {
 		return streamValues(isbnHM)
 				.filter(b -> b.getPublisher().getName().equals(pName))
 				.collect(Collectors.toCollection(ArrayList::new));
@@ -473,56 +473,65 @@ public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 
 	@Override
 	public Iterable<Book> getBooksPrintedBefore(LocalDate max) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getEdition().isBefore(max))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterable<Book> getBooksPrintedBefore(int year) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getEdition().getYear() < year)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterable<Book> getBooksPrintedAfter(LocalDate min) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getEdition().isAfter(min))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterable<Book> getBooksPrintedAfter(int year) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getEdition().getYear() >= year)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterable<Book> getBooksPrintedInRange(LocalDate min, LocalDate max) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> (b.getEdition().isAfter(min) &&   b.getEdition().isBefore(max)))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterable<Book> getBooksPrintedInRange(int yearMin, int yearMax) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getEdition().getYear() >= yearMin && b.getEdition().getYear() < yearMax)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterable<Book> getBooksCheaperThan(double maxPrice) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getPrice() <= maxPrice)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterable<Book> getBooksMoreExpensiveThan(double minPrice) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> b.getPrice() > minPrice)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterable<Book> getBooksPricedInRange(double minPrice, double maxPrice) {
-		// TODO Auto-generated method stub
-		return null;
+		return streamValues(isbnHM)
+				.filter(b -> (b.getPrice() > minPrice && b.getPrice() <= maxPrice))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
