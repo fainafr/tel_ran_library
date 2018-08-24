@@ -2,8 +2,12 @@ package util;
 
 import java.time.LocalDate;
 import java.util.Random;
+import java.util.TreeSet;
 
+import comparators.BookGeneralComparator;
+import dao.Book;
 import dao.Countries;
+import model.Library;
 
 public class RandomLibrary {
 	
@@ -11,6 +15,7 @@ public class RandomLibrary {
 	private static String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private static int alphabetLength = alphabet.length();
 	private static Countries[] countries = Countries.values();
+	private static final int MODELMAXBOOKS = 4;
 	
 	public static int nextIntRange(int min, int max){
 		return  min + gen.nextInt(max - min + 1);
@@ -45,6 +50,27 @@ public class RandomLibrary {
 	
 	public static LocalDate getRandomDate(LocalDate from, LocalDate to){
 		return LocalDate.ofEpochDay((long)nextIntRange((int)from.toEpochDay(), (int)to.toEpochDay()));
+	}
+	
+	
+	/**
+	 * @return new random library
+	 */
+	public static Library randomModel() {
+		return randomModel(MODELMAXBOOKS);
+	}
+	
+	/**
+	 * @return new random library
+	 */
+	public static Library randomModel(int maxBooks) {
+		TreeSet<Book> lib = new TreeSet<>(BookGeneralComparator.getInstance());
+		for (int i = 0; i < maxBooks; i++)
+			lib.add(Book.getRandomBook());
+		Library model = new Library();
+		for (Book b : lib)
+			model.addBook(b);
+		return model;
 	}
 
 }

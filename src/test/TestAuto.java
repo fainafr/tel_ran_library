@@ -3,24 +3,29 @@ package test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Test;
 
+import IO.LibraryIO;
 import comparators.BookGeneralComparator;
 import dao.Author;
 import dao.Book;
 import dao.Countries;
 import dao.Publisher;
 import model.Library;
+import util.RandomLibrary;
 
 public class TestAuto {
 	
+
 	/*
 	 * Testing strategy 
 	 * The library class implements selftest that checks the integrity of its data
@@ -29,6 +34,8 @@ public class TestAuto {
 	 * We test contains() and size() to make sure that the library behaves as expected
 	 * We test that the sorting works
 	 */
+	
+
 	
 	private static final Author AUTHOR1 = new Author ("Jackob", "Ford");
 	private static final Author AUTHOR2 = new Author ("Thomas", "Moor");
@@ -54,6 +61,7 @@ public class TestAuto {
 	private static final Book BOOK1 = new Book(ISBN1, AUTHORS12, TITLE1, PUBLISHER1, DATE1, PRICE1);
 	private static final Book BOOK2 = new Book(ISBN2, AUTHORS23, TITLE2, PUBLISHER2, DATE2, PRICE2);
 	
+	private static final String LIBRARY_FILE = "Library.txt";
 	
 	/**
 	 * Assertions must be enabled
@@ -88,7 +96,7 @@ public class TestAuto {
 	 */
 	@Test
 	public void testAdd() {
-		Library model = new Library();
+		Library model =  new Library();
 		for (int i = 0; i< 1000 ;i++) model.addBook(BOOK1);
 		assertTrue(model.contains(BOOK1));
 		assertTrue(model.size() == 1);
@@ -221,5 +229,26 @@ public class TestAuto {
 			priceStart = b.getPrice();
 		}
 	}
-
+	
+	/**
+	 * Testing that the IO to text file works
+	 */
+	@Test
+	public void dumpAndParseTest() throws IOException {
+		Library model = RandomLibrary.randomModel(4);
+		Library reparse;
+		LibraryIO.dumpToFile(model, LIBRARY_FILE);
+		reparse = LibraryIO.readFromFile(LIBRARY_FILE);
+		assertTrue(model.size() == reparse.size());
+		
+		Iterable<Book> modelIt = model.getAllBooks();
+		Iterable<Book> reparseIt = reparse.getAllBooks();
+		Iterator<Book> mIt = modelIt.iterator();
+		Iterator<Book> rpIt = reparseIt.iterator();
+		for(int i = 0; i < model.size(); i++){
+			Book mBook = mIt.next();
+			Book rpBook = rpIt.next();
+			assertTrue(mBook.equals(rpBook));
+		}
+	}
 }

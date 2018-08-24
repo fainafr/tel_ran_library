@@ -1,20 +1,20 @@
 package test;
 
 import java.io.IOException;
-import java.util.TreeSet;
+import java.util.Iterator;
 
 import IO.LibraryIO;
-import comparators.BookGeneralComparator;
 import dao.Book;
 import model.Library;
+import util.RandomLibrary;
 
 public class TestManual {
 	
-	private static final int MODELMAXBOOKS = 4;
+	
 	private static final String LIBRARY_FILE = "Library.txt";
 
 	public static void main(String[] args) throws IOException {
-		Library model = randomModel();
+		Library model = RandomLibrary.randomModel(4);
 		
 		dumpAndParseTest(model);
 
@@ -33,35 +33,37 @@ public class TestManual {
 	 */
 	private static void dumpAndParseTest(Library model) throws IOException {
 		Library reparse;
-		System.out.println("ORIGINAL BOOKZ");
-		for (Book book : model.getAllBooks()){
-			System.out.println(book);
+		LibraryIO.dumpToFile(model, LIBRARY_FILE);
+		reparse = LibraryIO.readFromFile(LIBRARY_FILE);
+		Iterable<Book> modelIt = model.getAllBooks();
+		Iterable<Book> reparseIt = reparse.getAllBooks();
+		
+		if(model.size() != reparse.size()) return;
+		Iterator<Book> mIt = modelIt.iterator();
+		Iterator<Book> rpIt = reparseIt.iterator();
+		
+		for(int i = 0; i < model.size(); i++){
+			
+			Book mBook = mIt.next();
+			Book rpBook = rpIt.next();
+			System.out.println(mBook);
+			System.out.println(rpBook);
+			if (!mBook.equals(rpBook)) System.out.println("Inequals");
 		}
 		
-		LibraryIO.dumpToFile(model, LIBRARY_FILE);
-		
-		reparse = LibraryIO.readFromFile(LIBRARY_FILE);
+		System.out.println("ORIGINAL BOOKZ");
+		for (Book book : modelIt){
+			System.out.println(book);
+		}
 		
 		System.out.println();
 		System.out.println("REPARSED BOOKZ");
-		for (Book book : reparse.getAllBooks()){
+		for (Book book : reparseIt){
 			System.out.println(book);
 		}
 	}
 
 
-	/**
-	 * @return new random library
-	 */
-	private static Library randomModel() {
-		TreeSet<Book> lib = new TreeSet<>(BookGeneralComparator.getInstance());
-		for (int i = 0; i < MODELMAXBOOKS; i++)
-			lib.add(Book.getRandomBook());
-		Library model = new Library();
-		for (Book b : lib)
-			model.addBook(b);
-		return model;
-	}
 	
 	
 

@@ -66,4 +66,21 @@ public class Author implements Comparable<Author>{
 		int c = firstName.compareTo(other.firstName);
 		return c == 0 ? lastName.compareTo(other.lastName): c;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Author other = (Author) obj;
+		if (firstName!= other.getFirstName())
+			return false;
+		if (lastName!= other.getLastName())
+			return false;
+		
+		return true;
+	}
 }
