@@ -1,4 +1,4 @@
-package util;
+package multimap;
 
 import java.util.ArrayList;
 import java.util.Collection;

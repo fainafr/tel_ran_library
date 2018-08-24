@@ -21,10 +21,8 @@ import dao.Author;
 import dao.Book;
 import dao.Countries;
 import dao.Publisher;
-import util.BookKey;
-import util.MultiMapFillerByBook;
-import util.MultiMap;
-import util.BookSortWay;
+import multimap.MultiMap;
+import multimap.MultiMapFillerByBook;
 
 public class Library implements ILibrary, Iterable<Entry<Long, Book>> {
 

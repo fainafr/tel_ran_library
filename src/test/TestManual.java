@@ -1,57 +1,69 @@
 package test;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.TreeSet;
 
+import IO.LibraryIO;
 import comparators.BookGeneralComparator;
 import dao.Book;
 import model.Library;
 
 public class TestManual {
 	
+	private static final int MODELMAXBOOKS = 4;
+	private static final String LIBRARY_FILE = "Library.txt";
+
 	public static void main(String[] args) throws IOException {
+		Library model = randomModel();
+		
+		dumpAndParseTest(model);
+
+//		testRemovingsI(model);
+//		
+//		testCorrectionsI(model);
+//		
+//		testSortings(model);	
+	}
+
+
+	/**
+	 * Visual test for dumping and reparsing the lib
+	 * @param model
+	 * @throws IOException
+	 */
+	private static void dumpAndParseTest(Library model) throws IOException {
+		Library reparse;
+		System.out.println("ORIGINAL BOOKZ");
+		for (Book book : model.getAllBooks()){
+			System.out.println(book);
+		}
+		
+		LibraryIO.dumpToFile(model, LIBRARY_FILE);
+		
+		reparse = LibraryIO.readFromFile(LIBRARY_FILE);
+		
+		System.out.println();
+		System.out.println("REPARSED BOOKZ");
+		for (Book book : reparse.getAllBooks()){
+			System.out.println(book);
+		}
+	}
+
+
+	/**
+	 * @return new random library
+	 */
+	private static Library randomModel() {
 		TreeSet<Book> lib = new TreeSet<>(BookGeneralComparator.getInstance());
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < MODELMAXBOOKS; i++)
 			lib.add(Book.getRandomBook());
 		Library model = new Library();
 		for (Book b : lib)
 			model.addBook(b);
-		
-		dumpToFile(model);
-
-		
-		
-		testRemovingsI(model);
-		
-		testCorrectionsI(model);
-		
-		testSortings(model);	
+		return model;
 	}
 	
-	/**
-	 * Dumps any library to "Library.txt" in the root
-	 * @param lib any library
-	 * @throws IOException
-	 */
-	private static void dumpToFile(Library lib) throws IOException{
-		File file = new File("Library.txt");
-
-		file.createNewFile();
-
-		PrintWriter filewriter = null;
-
-		filewriter = new PrintWriter("Library.txt");
-
-		// overrites
-		for (Book book : lib.getAllBooks()) filewriter.println(book.toString());
-
-		// apply
-		filewriter.flush();
-
-		filewriter.close();
-	}
+	
 
 	private static void testCorrectionsI(Library model) {
 		System.out.println("CORRECTIONS");

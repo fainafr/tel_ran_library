@@ -1,11 +1,13 @@
-package util;
+package multimap;
 
 import java.util.Comparator;
 import java.util.TreeSet;
 
 import comparators.BookGeneralComparator;
 import dao.Book;
-import util.MultiMap;
+import model.BookKey;
+import model.BookSortWay;
+import multimap.MultiMap;
 
 /**
  * Concrete class for putting things into multimap.
