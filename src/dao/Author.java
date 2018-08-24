@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import util.RandomLibrary;
 
-public class Author implements Comparable<Author>,  Serializable{
+public final class Author implements Comparable<Author>,  Serializable{
 
 
 	private static final long serialVersionUID = 3689171261098583060L;
