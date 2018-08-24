@@ -1,5 +1,6 @@
 package dao;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -7,8 +8,9 @@ import java.util.Set;
 
 import util.RandomLibrary;
 
-public class Book {
+public class Book implements Serializable {
 
+	private static final long serialVersionUID = -3241868955799364310L;
 	public static final long DEFAULT_ISBN = 0;
 	public static final Set<Author> DEFAULT_AUTHORS = Author.getEmptyAuthors();
 	public static final String DEFAULT_TITLE = "no title";

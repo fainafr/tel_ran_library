@@ -1,9 +1,15 @@
 package dao;
 
+import java.io.Serializable;
+
 import util.RandomLibrary;
 
-public class Publisher implements Comparable<Publisher>{
+public class Publisher implements Comparable<Publisher>, Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1731476746324573216L;
 	public static final Countries DEFAULT_COUNTRY = Countries.unknown;
 	public static final String DEFAULT_PUBLISHER_NAME = "no name";
 	

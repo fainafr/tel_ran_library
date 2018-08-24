@@ -1,12 +1,15 @@
 package dao;
 
+import java.io.Serializable;
 import java.util.Set;
 import java.util.TreeSet;
 
 import util.RandomLibrary;
 
-public class Author implements Comparable<Author>{
+public class Author implements Comparable<Author>,  Serializable{
 
+
+	private static final long serialVersionUID = 3689171261098583060L;
 	public static final String DEFAULT_FIRST_NAME = "no fName";
 	public static final String DEFAULT_LAST_NAME = "no lName";
 	

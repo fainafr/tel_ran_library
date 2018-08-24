@@ -3,7 +3,12 @@ package test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
@@ -64,6 +69,38 @@ public class TestAuto {
 	private static final String LIBRARY_FILE = "Library.txt";
 	
 	/**
+	 * Runs all sort on a library
+	 * @param model
+	 */
+	private void runAllSorts(Library model) {
+		model.getAllBooks();
+		model.getAllBooksSortedByAuthors();
+		model.getAllBooksSortedByEditionDate();
+		model.getAllBooksSortedByPrice();
+		model.getAllBooksSortedByPublisherCountries();
+		model.getAllBooksSortedByPublisherNames();
+		model.getAllBooksSortedByTitle();
+	}
+	
+	/**
+	 * Compares two libraries
+	 * @param model
+	 * @param reparse
+	 */
+	private static void compare(Library model, Library reparse) {
+		assertTrue(model.size() == reparse.size());
+		Iterable<Book> modelIt = model.getAllBooks();
+		Iterable<Book> reparseIt = reparse.getAllBooks();
+		Iterator<Book> mIt = modelIt.iterator();
+		Iterator<Book> rpIt = reparseIt.iterator();
+		for (int i = 0; i < model.size(); i++) {
+			Book mBook = mIt.next();
+			Book rpBook = rpIt.next();
+			assert(mBook.equals(rpBook));
+		}
+	}
+	
+	/**
 	 * Assertions must be enabled
 	 */
 	@Test(expected=AssertionError.class)
@@ -80,15 +117,7 @@ public class TestAuto {
 		assertTrue(model.isEmpty());
 	}
 	
-	private void runAllSorts(Library model) {
-		model.getAllBooks();
-		model.getAllBooksSortedByAuthors();
-		model.getAllBooksSortedByEditionDate();
-		model.getAllBooksSortedByPrice();
-		model.getAllBooksSortedByPublisherCountries();
-		model.getAllBooksSortedByPublisherNames();
-		model.getAllBooksSortedByTitle();
-	}
+	
 	
 	/**
 	 * add works correctly; 
@@ -235,20 +264,36 @@ public class TestAuto {
 	 */
 	@Test
 	public void dumpAndParseTest() throws IOException {
-		Library model = RandomLibrary.randomModel(4);
+		Library model = RandomLibrary.randomModel();
 		Library reparse;
 		LibraryIO.dumpToFile(model, LIBRARY_FILE);
 		reparse = LibraryIO.readFromFile(LIBRARY_FILE);
-		assertTrue(model.size() == reparse.size());
+		compare(model, reparse);
 		
-		Iterable<Book> modelIt = model.getAllBooks();
-		Iterable<Book> reparseIt = reparse.getAllBooks();
-		Iterator<Book> mIt = modelIt.iterator();
-		Iterator<Book> rpIt = reparseIt.iterator();
-		for(int i = 0; i < model.size(); i++){
-			Book mBook = mIt.next();
-			Book rpBook = rpIt.next();
-			assertTrue(mBook.equals(rpBook));
-		}
 	}
+	
+	/**
+	 * Testing that the IO to serial file works
+	 * @throws ClassNotFoundException 
+	 */
+	@Test
+	public void dumpAndParseSerials() throws IOException, ClassNotFoundException {
+		Library model = RandomLibrary.randomModel();
+		File fileobj = new File("lib.dta");
+		fileobj.createNewFile();
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileobj));
+		oos.writeObject(model.getAllBooks());
+		oos.close();
+
+		ObjectInputStream ols = new ObjectInputStream(new FileInputStream("lib.dta"));
+		Library reparse = new Library();
+		@SuppressWarnings("unchecked")
+		Iterable<Book> reparseIT = (Iterable<Book>) ols.readObject();
+		reparseIT.forEach(b -> reparse.addBook(b));
+		ols.close();
+		compare(model, reparse);
+		
+	}
+	
+	
 }
