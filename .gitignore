@@ -3,3 +3,7 @@
 
 # Txt files #
 *.txt
+
+
+# Dta files #
+*.dta
