@@ -7,8 +7,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import IO.LibraryIO;
+import dao.Author;
 import dao.Book;
 import model.Library;
 import util.RandomLibrary;
@@ -20,6 +30,8 @@ public class TestManual {
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		Library model = RandomLibrary.randomModel(4);
 
+		printByAuthors(model);
+		
 		serializeAndReparseVisual(model);
 		
 		dumpAndParseVisual(model);
@@ -29,6 +41,49 @@ public class TestManual {
 		testCorrectionsI(model);
 
 		testSortings(model);
+	}
+
+	
+	/**
+	 * Prints each author in the library and the books credited to him.
+	 * @param model library 
+	 * Creates
+	 */
+	public static void printByAuthors(Library model) {
+		authors(model)
+		.peek(a -> System.out.print(a.toString() + ": ")) // From each author..
+		.map(a -> model.getBooksByAuthor(a)) // to Iterable..
+		.flatMap(a -> StreamSupport.stream(a.spliterator(), false)) // To stream..
+		.forEach(b -> System.out.println(b.toShortString()));		// Custom print
+	}
+	
+	/**
+	 * @param model Library
+	 * @return multimap of books by author
+	 */
+	public static Map<Author, Set<Book>> multiMapAuthors(Library model) {
+		Map<Author, Set<Book>> multiAuthors = new HashMap<>();
+		authors(model)
+		.forEach(a -> multiAuthors.put(a, createSet(model.getBooksByAuthor(a))));
+		return multiAuthors;		
+	}
+	
+	/**
+	 * @param booksByAuthor Iterable
+	 * @return Set from this iterable
+	 */
+	private static Set<Book> createSet(Iterable<Book> booksByAuthor) {
+		return StreamSupport.stream(booksByAuthor.spliterator(), false).collect(Collectors.toSet());
+	}
+
+	/**
+	 * @param model library
+	 * @return Stream of authors in the model
+	 */
+	private static Stream<Author> authors(Library model) {
+		return StreamSupport.stream(model.getAllBooksSortedByAuthors().spliterator(), false)
+		.map((Book b) -> b.getAuthors())
+		.flatMap(a -> a.stream()).distinct();
 	}
 
 	/**
