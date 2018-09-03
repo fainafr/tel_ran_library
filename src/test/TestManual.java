@@ -47,7 +47,6 @@ public class TestManual {
 	/**
 	 * Prints each author in the library and the books credited to him.
 	 * @param model library 
-	 * Creates
 	 */
 	public static void printByAuthors(Library model) {
 		authors(model)
