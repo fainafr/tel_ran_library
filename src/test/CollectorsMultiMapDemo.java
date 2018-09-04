@@ -96,6 +96,8 @@ public class CollectorsMultiMapDemo {
 	 *            Library
 	 * @return multimap of books by author
 	 */
+	//Legacy method that will be used in performance tests
+	@SuppressWarnings("unused")
 	private static Map<Author, Set<Book>> multiMapAuthors(Library model) {
 		Map<Author, Set<Book>> multiAuthors = new HashMap<>();
 		authors(model).forEach(a -> multiAuthors.put(a, createSet(model.getBooksByAuthor(a))));
