@@ -92,7 +92,6 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 	 * @param map multimap
 	 */
 	public static final <K, V extends Iterable<E>, E> void display(Map<K, V> map) {
-		System.out.println();
 		for (Entry<K, V> entry : map.entrySet()) {
 			long size = entry.getValue().spliterator().getExactSizeIfKnown();
 			System.out.println("SIZE= "+size+" "+ entry.toString());
