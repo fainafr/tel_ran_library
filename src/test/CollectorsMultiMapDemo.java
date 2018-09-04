@@ -1,6 +1,7 @@
 package test;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,6 +23,43 @@ public class CollectorsMultiMapDemo {
 		Library model = RandomLibrary.randomModel(4);
 		System.out.println("Displaying By Author");
 		MultiMap.display(multiMapAuthorsCollector(model));
+		System.out.println("Displaying By Author II");
+		MultiMap.display(getByAuthor(model.getAllBooks()));
+	}
+	
+	/**
+	 * @param model
+	 *            library
+	 * @return Stream of authors in the model
+	 */
+	private static Stream<Author> authors(Library model) {
+		return StreamSupport.stream(model.getAllBooks().spliterator(), false).map((Book b) -> b.getAuthors())
+				.flatMap((Set<Author> a) -> a.stream()).map((Author a) -> a).distinct();
+	}
+
+	/**
+	 * Multimap put with a separate key, must be contained in E
+	 */
+	// to refactor in MultiMap class, pls
+	private static boolean putToIterableMap(Map<Author, Set<Book>> map, Book book, Author key) {
+		Set<Book> col = map.get(key);
+		if (col == null) {
+			col = new HashSet<Book>();
+			map.put(key, col);
+		}
+		return col.add(book);
+	}
+	
+	/**
+	 * Optimised way of getting the Author, Set<Book> collection
+	 * @param books iterable by Book
+	 * @return Authors with Books they wrote
+	 */
+	private static Map<Author, Set<Book>> getByAuthor(Iterable<Book> books){
+		Map<Author, Set<Book>> mb = new HashMap<>();
+		StreamSupport.stream(books.spliterator(), false)
+		.forEach((Book b) -> b.getAuthors().forEach(((Author a)->putToIterableMap(mb, b, a))));
+		return mb;
 	}
 
 
@@ -42,26 +80,28 @@ public class CollectorsMultiMapDemo {
 																	// print
 	}
 
-	/**
-	 * @param model
-	 *            Library
-	 * @return multimap of books by author
-	 */
-	public static Map<Author, Set<Book>> multiMapAuthors(Library model) {
-		Map<Author, Set<Book>> multiAuthors = new HashMap<>();
-		authors(model).forEach(a -> multiAuthors.put(a, createSet(model.getBooksByAuthor(a))));
-		return multiAuthors;
-	}
+
 
 	/**
 	 * @param model
 	 *            Library
 	 * @return multimap of books by author using Collector
 	 */
-	public static Map<Author, Set<Book>> multiMapAuthorsCollector(Library model) {
+	private static Map<Author, Set<Book>> multiMapAuthorsCollector(Library model) {
 		return authors(model).collect(Collectors.toMap((Author a) -> a, a -> createSet(model.getBooksByAuthor(a))));
 	}
 
+	/**
+	 * @param model
+	 *            Library
+	 * @return multimap of books by author
+	 */
+	private static Map<Author, Set<Book>> multiMapAuthors(Library model) {
+		Map<Author, Set<Book>> multiAuthors = new HashMap<>();
+		authors(model).forEach(a -> multiAuthors.put(a, createSet(model.getBooksByAuthor(a))));
+		return multiAuthors;
+	}
+	
 	/**
 	 * @param booksByAuthor
 	 *            Iterable
@@ -71,14 +111,5 @@ public class CollectorsMultiMapDemo {
 		return StreamSupport.stream(booksByAuthor.spliterator(), false).collect(Collectors.toSet());
 	}
 
-	/**
-	 * @param model
-	 *            library
-	 * @return Stream of authors in the model
-	 */
-	private static Stream<Author> authors(Library model) {
-		return StreamSupport.stream(model.getAllBooks().spliterator(), false).map((Book b) -> b.getAuthors())
-				.flatMap((Set<Author> a) -> a.stream()).map((Author a) -> a).distinct();
-	}
-
+	
 }
