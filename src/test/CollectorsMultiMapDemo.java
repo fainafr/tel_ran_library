@@ -3,12 +3,9 @@ package test;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 
 import dao.Author;
 import dao.Book;
@@ -16,30 +13,17 @@ import model.Library;
 import multimap.MultiMap;
 import util.RandomLibrary;
 
-public class MapFromStreamDemo {
+public class CollectorsMultiMapDemo {
 
 	/**
-	 *Class that demonstrates use of Collectors;
+	 * Class that demonstrates use of Collectors;
 	 */
-	public static void main(String[] args)  {
+	public static void main(String[] args) {
 		Library model = RandomLibrary.randomModel(4);
 		System.out.println("Displaying By Author");
 		MultiMap.display(multiMapAuthorsCollector(model));
-		System.out.println();
-		System.out.println("Displaying By Book - all prices");
-		printAllPricesForEachBook();
 	}
 
-	public static void printAllPricesForEachBook() {
-		Stream.generate(Book::getRandomBook).limit(30).collect(Collectors.toMap(b -> b.getTitle(), b -> {
-			TreeSet<Double> tsp = new TreeSet<>();
-			tsp.add(b.getPrice());
-			return tsp;
-		}, (x, y) -> {
-			x.addAll(y);
-			return x;
-		}, TreeMap::new)).entrySet().forEach(x -> System.out.println(x.getKey()+" : "+x.getValue()));
-	}
 
 	/**
 	 * Prints each author in the library and the books credited to him.
