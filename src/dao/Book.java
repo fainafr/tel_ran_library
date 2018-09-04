@@ -114,15 +114,20 @@ public class Book implements Serializable {
 
 		return new Book(bookISBN, Author.getRandomAuthors(), TITLES[RandomLibrary.gen.nextInt(TITLES.length)],
 				Publisher.getRandomPublisher(), RandomLibrary.getRandomDate(oldest, now),
-				Double.parseDouble(String.format("%.2f", RandomLibrary.nextDoubleRange(MIN_BOOK_PRICE, MAX_BOOK_PRICE))));
+				Double.parseDouble(String.format(Locale.US, "%.2f", RandomLibrary.nextDoubleRange(MIN_BOOK_PRICE, MAX_BOOK_PRICE))));
 	}
 
 	@Override
 	public String toString() {
 		return "Book: " + ISBN + "; author(s): " + authors + "; '" + title + "'; publisher: " + publisher + "; "
-				+ edition.format(dtf) + "; " + String.format("%.2f", price);
+				+ edition.format(dtf) + "; " + String.format(Locale.US, "%.2f", price);
 	}
 
+	public String toShortString() {
+		return "Author(s): " + authors + "; '" + title + "'; "
+				+ edition.format(dtf);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
