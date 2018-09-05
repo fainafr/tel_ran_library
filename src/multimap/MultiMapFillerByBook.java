@@ -12,7 +12,7 @@ import multimap.MultiMap;
 /**
  * Concrete class for putting things into multimap.
  */
-public class MultiMapFillerByBook extends MultiMap<BookKey<?>, TreeSet<Book>, Book> {
+public class MultiMapFillerByBook extends MultiMapKey<BookKey<?>, TreeSet<Book>, Book> {
 
 	private static final Comparator<Book> generalComparator = BookGeneralComparator.getInstance();
 
