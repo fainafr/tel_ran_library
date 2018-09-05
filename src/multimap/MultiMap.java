@@ -10,7 +10,7 @@ import java.util.Map.Entry;
  * MultiMap utilites
  * 
  * @param <K>
- *            map key, must be contained in E
+ *            map key
  * @param <V>
  *            Collection iterable by E
  * @param <E>
@@ -20,15 +20,28 @@ public abstract class MultiMap<K, V extends Collection<E> & Iterable<E>, E> {
 
 	/**
 	 * Adding a new element into the multimap: a map where key corresponds to a
-	 * collection. Template pattern employed to reduce code duplication.
+	 * collection. 
 	 * 
-	 * @param map
-	 *            Multimap
-	 * @param element
+	 * @param map<K,V>
+	 *            Multimap, K must be contained in E
+	 * @param element E
 	 *            Element of the map
 	 */
 	public boolean putToIterableMap(Map<K, V> map, E element) {
 		K key = getKey(element);
+		return putToIterableMap(map, element, key);
+	}
+	
+	/**
+	 * Overloaded method for 
+	 * 
+	 * @param map<K, V>
+	 *            Multimap
+	 * @param element
+	 *            Element of the map
+	 * @param key Key of the map
+	 */
+	public boolean putToIterableMap(Map<K, V> map, E element, K key) {
 		if (key == null)
 			return false;
 		V col = map.get(key);

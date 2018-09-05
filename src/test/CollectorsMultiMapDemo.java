@@ -12,10 +12,12 @@ import dao.Author;
 import dao.Book;
 import model.Library;
 import multimap.MultiMap;
+import multimap.MultiMapAuthorKeyFiller;
 import util.RandomLibrary;
 
 public class CollectorsMultiMapDemo {
-
+	
+	private static MultiMapAuthorKeyFiller filler = new MultiMapAuthorKeyFiller();
 	/**
 	 * Class that demonstrates use of Collectors;
 	 */
@@ -37,18 +39,7 @@ public class CollectorsMultiMapDemo {
 				.flatMap((Set<Author> a) -> a.stream()).map((Author a) -> a).distinct();
 	}
 
-	/**
-	 * Multimap put with a separate key, must be contained in E
-	 */
-	// to refactor in MultiMap class, pls
-	private static boolean putToIterableMap(Map<Author, Set<Book>> map, Book book, Author key) {
-		Set<Book> col = map.get(key);
-		if (col == null) {
-			col = new HashSet<Book>();
-			map.put(key, col);
-		}
-		return col.add(book);
-	}
+	
 	
 	/**
 	 * Optimised way of getting the Author, Set<Book> collection
@@ -58,7 +49,7 @@ public class CollectorsMultiMapDemo {
 	private static Map<Author, Set<Book>> getByAuthor(Iterable<Book> books){
 		Map<Author, Set<Book>> mb = new HashMap<>();
 		StreamSupport.stream(books.spliterator(), false)
-		.forEach((Book b) -> b.getAuthors().forEach(((Author a)->putToIterableMap(mb, b, a))));
+		.forEach((Book b) -> b.getAuthors().forEach(((Author a)->filler.putToIterableMap(mb, b, a))));
 		return mb;
 	}
 
