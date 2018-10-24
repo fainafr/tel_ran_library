@@ -24,6 +24,8 @@ public class Publisher implements Comparable<Publisher>, Serializable{
 		setName(name);
 	}
 	
+	public Publisher() {};
+	
 	public Countries getCountry() {return country;}
 	public String getName() {return name;}
 

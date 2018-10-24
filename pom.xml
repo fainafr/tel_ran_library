@@ -4,6 +4,8 @@
 	<groupId>2018-07-25_Library</groupId>
 	<artifactId>2018-07-25_Library</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
+
 	<build>
 		<sourceDirectory>src/main</sourceDirectory>
 		<testSourceDirectory>src/test</testSourceDirectory>
@@ -14,6 +16,7 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<compilerArgument>-parameters</compilerArgument>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -42,5 +45,6 @@
 		</dependency>
 
 	</dependencies>
+
 
 </project>

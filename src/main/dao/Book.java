@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import util.RandomLibrary;
 
 public class Book implements Serializable {
@@ -39,6 +41,8 @@ public class Book implements Serializable {
 		setPrice(price);
 	}
 
+	public Book() {};
+	
 	public long getISBN() {
 		return ISBN;
 	}

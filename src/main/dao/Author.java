@@ -26,6 +26,8 @@ public final class Author implements Comparable<Author>,  Serializable{
 		setFirstName(firstName);
 		setLastName(lastName);
 	}
+	
+	public Author() {}
 
 	public String getFirstName() {return firstName;}
 	public String getLastName() {return lastName;}
