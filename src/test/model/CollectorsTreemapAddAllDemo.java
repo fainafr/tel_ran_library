@@ -1,4 +1,4 @@
-package test;
+package model;
 
 import java.util.TreeMap;
 import java.util.TreeSet;
